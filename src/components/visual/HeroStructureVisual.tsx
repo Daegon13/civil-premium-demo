@@ -43,29 +43,22 @@ export function HeroStructureVisual() {
               <path className="hero-draw-line delay-[900ms]" d="M110 264 L305 180 L500 248" />
             </g>
 
-            <g className="opacity-65">
-              <ellipse cx="258" cy="112" rx="88" ry="34" fill="url(#surface-grad)" />
-              <ellipse cx="384" cy="180" rx="126" ry="48" fill="url(#surface-grad-2)" />
+            <g className="opacity-72" stroke="color-mix(in srgb, var(--color-accent) 58%, transparent)" strokeWidth="1">
+              <path d="M35 276 H520" strokeDasharray="5 7" />
+              <path d="M35 276 v-14" />
+              <path d="M520 276 v-14" />
+              <path d="M84 244 h14" />
+              <path d="M84 220 h10" />
+              <path d="M84 196 h14" />
+              <path d="M84 172 h10" />
             </g>
 
-            <g className="opacity-80">
-              <path d="M238 78 L280 55" stroke="color-mix(in srgb, #dbe5f1 66%, transparent)" strokeWidth="1.1" />
-              <path d="M410 108 L448 92" stroke="color-mix(in srgb, #dbe5f1 48%, transparent)" strokeWidth="1" />
-              <circle cx="270" cy="125" r="3.2" fill="color-mix(in srgb, #e3edf9 76%, transparent)" />
+            <g className="opacity-82" fill="color-mix(in srgb, var(--color-text-muted) 88%, transparent)">
+              <text x="46" y="268" fontSize="10" letterSpacing="1.7">MOD 3.00 m</text>
+              <text x="400" y="268" fontSize="10" letterSpacing="1.7">EJE B-B</text>
+              <text x="98" y="150" fontSize="9" letterSpacing="1.4">COTA +7.20</text>
+              <text x="322" y="88" fontSize="9" letterSpacing="1.4">NUDO N-04</text>
             </g>
-
-            <defs>
-              <linearGradient id="surface-grad" x1="170" y1="112" x2="346" y2="112" gradientUnits="userSpaceOnUse">
-                <stop offset="0" stopColor="transparent" />
-                <stop offset="0.5" stopColor="color-mix(in srgb, var(--color-accent) 22%, #b7c6d7)" />
-                <stop offset="1" stopColor="transparent" />
-              </linearGradient>
-              <linearGradient id="surface-grad-2" x1="258" y1="180" x2="510" y2="180" gradientUnits="userSpaceOnUse">
-                <stop offset="0" stopColor="transparent" />
-                <stop offset="0.48" stopColor="color-mix(in srgb, var(--color-accent) 18%, #9eb0c5)" />
-                <stop offset="1" stopColor="transparent" />
-              </linearGradient>
-            </defs>
           </svg>
 
           <div className="absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(to_top,rgba(10,13,18,0.82),transparent)]" />
