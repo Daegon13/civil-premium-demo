@@ -2,15 +2,15 @@ import { GridOverlay } from "@/components/visual/GridOverlay";
 
 export function HeroStructureVisual() {
   return (
-    <div className="technical-grid relative min-h-[23.5rem] overflow-hidden rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--color-border)_76%,var(--color-accent)_24%)] bg-[radial-gradient(120%_95%_at_88%_8%,color-mix(in_srgb,var(--color-accent)_26%,transparent)_0%,transparent_56%),var(--color-surface)] p-5 shadow-[var(--shadow-panel)] sm:min-h-[25rem] sm:p-6">
+    <div className="technical-grid group relative min-h-[25rem] overflow-hidden rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--color-border)_76%,var(--color-accent)_24%)] bg-[radial-gradient(130%_100%_at_88%_8%,color-mix(in_srgb,var(--color-accent)_24%,transparent)_0%,transparent_58%),var(--color-surface)] p-5 shadow-[var(--shadow-panel)] sm:min-h-[27rem] sm:p-6 lg:min-h-[29.5rem]">
       <GridOverlay />
 
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,transparent_14%,rgba(13,17,23,0.4)_62%,rgba(9,12,16,0.8)_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,transparent_14%,rgba(13,17,23,0.35)_62%,rgba(9,12,16,0.74)_100%)]" />
 
-      <div className="relative z-10 grid h-full grid-rows-[1fr_auto] gap-5">
+      <div className="relative z-10 grid h-full grid-rows-[1fr_auto] gap-4 sm:gap-5">
         <div className="relative overflow-hidden rounded-[calc(var(--radius-md)+2px)] border border-[color-mix(in_srgb,var(--color-border)_68%,var(--color-accent)_32%)] bg-[color-mix(in_srgb,var(--color-surface-muted)_86%,#0f1318)] p-4 sm:p-5">
-          <div className="absolute left-4 top-4 h-2 w-16 rounded-full bg-[color-mix(in_srgb,var(--color-accent)_45%,transparent)] blur-[1px]" />
-          <div className="absolute right-6 top-6 h-3 w-3 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)]" />
+          <div className="absolute left-4 top-4 h-2 w-16 rounded-full bg-[color-mix(in_srgb,var(--color-accent)_45%,transparent)] blur-[1px] opacity-55" />
+          <div className="absolute right-6 top-6 h-3 w-3 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] opacity-80" />
 
           <svg aria-hidden viewBox="0 0 560 320" className="h-full w-full" fill="none" strokeLinecap="round" strokeLinejoin="round">
             <g className="translate-y-[14px] opacity-35 blur-[0.6px]">
@@ -19,28 +19,28 @@ export function HeroStructureVisual() {
               <path d="M305 180 L500 96 L500 248 L305 320 Z" stroke="color-mix(in srgb, var(--color-text-muted) 24%, transparent)" strokeWidth="1.7" />
             </g>
 
-            <g className="stroke-[color-mix(in_srgb,var(--color-text-muted)_60%,var(--color-accent)_20%)] opacity-75" strokeWidth="1.1">
-              <path className="hero-draw-line" d="M35 245 L270 125 L520 230" />
-              <path className="hero-draw-line delay-150" d="M35 220 L270 100 L520 205" />
-              <path className="hero-draw-line delay-300" d="M110 264 L110 110 L305 30 L305 180" />
-              <path className="hero-draw-line delay-500" d="M305 180 L500 96 L500 248 L305 320 Z" />
-              <path className="hero-draw-line delay-700" d="M110 110 L305 30 L500 96" />
-              <path className="hero-draw-line delay-[900ms]" d="M110 264 L305 180 L500 248" />
+            <g className="stroke-[color-mix(in_srgb,var(--color-text-muted)_60%,var(--color-accent)_20%)] opacity-70" strokeWidth="1.1">
+              <path className="hero-draw-line [animation-duration:0.95s]" d="M35 245 L270 125 L520 230" />
+              <path className="hero-draw-line delay-150 [animation-duration:0.95s]" d="M35 220 L270 100 L520 205" />
+              <path className="hero-draw-line delay-300 [animation-duration:1.1s]" d="M110 264 L110 110 L305 30 L305 180" />
+              <path className="hero-draw-line delay-500 [animation-duration:1.1s]" d="M305 180 L500 96 L500 248 L305 320 Z" />
+              <path className="hero-draw-line delay-700 [animation-duration:1.15s]" d="M110 110 L305 30 L500 96" />
+              <path className="hero-draw-line delay-[900ms] [animation-duration:1.15s]" d="M110 264 L305 180 L500 248" />
             </g>
 
-            <g className="translate-x-[7px] -translate-y-[5px] opacity-55">
+            <g className="translate-x-[7px] -translate-y-[5px] opacity-45 transition-opacity duration-700 delay-[1200ms] group-hover:opacity-55">
               <path d="M35 245 L270 125 L520 230" stroke="color-mix(in srgb, var(--color-accent) 44%, transparent)" strokeWidth="1.3" />
               <path d="M110 264 L110 110 L305 30 L305 180" stroke="color-mix(in srgb, var(--color-accent) 42%, transparent)" strokeWidth="1.25" />
               <path d="M305 180 L500 96 L500 248 L305 320 Z" stroke="color-mix(in srgb, var(--color-accent) 42%, transparent)" strokeWidth="1.25" />
             </g>
 
-            <g className="stroke-[color-mix(in_srgb,var(--color-accent)_82%,#d4deea)] opacity-85" strokeWidth="1.2">
-              <path className="hero-draw-line" d="M35 245 L270 125 L520 230" />
-              <path className="hero-draw-line delay-150" d="M35 220 L270 100 L520 205" />
-              <path className="hero-draw-line delay-300" d="M110 264 L110 110 L305 30 L305 180" />
-              <path className="hero-draw-line delay-500" d="M305 180 L500 96 L500 248 L305 320 Z" />
-              <path className="hero-draw-line delay-700" d="M110 110 L305 30 L500 96" />
-              <path className="hero-draw-line delay-[900ms]" d="M110 264 L305 180 L500 248" />
+            <g className="stroke-[color-mix(in_srgb,var(--color-accent)_82%,#d4deea)] opacity-80" strokeWidth="1.2">
+              <path className="hero-draw-line [animation-duration:1.2s]" d="M35 245 L270 125 L520 230" />
+              <path className="hero-draw-line delay-150 [animation-duration:1.2s]" d="M35 220 L270 100 L520 205" />
+              <path className="hero-draw-line delay-300 [animation-duration:1.35s]" d="M110 264 L110 110 L305 30 L305 180" />
+              <path className="hero-draw-line delay-500 [animation-duration:1.35s]" d="M305 180 L500 96 L500 248 L305 320 Z" />
+              <path className="hero-draw-line delay-700 [animation-duration:1.4s]" d="M110 110 L305 30 L500 96" />
+              <path className="hero-draw-line delay-[900ms] [animation-duration:1.4s]" d="M110 264 L305 180 L500 248" />
             </g>
 
             <g className="opacity-72" stroke="color-mix(in srgb, var(--color-accent) 58%, transparent)" strokeWidth="1">
@@ -53,7 +53,7 @@ export function HeroStructureVisual() {
               <path d="M84 172 h10" />
             </g>
 
-            <g className="opacity-82" fill="color-mix(in srgb, var(--color-text-muted) 88%, transparent)">
+            <g className="opacity-0 [animation:fadeUp_640ms_ease_1.25s_forwards]" fill="color-mix(in srgb, var(--color-text-muted) 88%, transparent)">
               <text x="46" y="268" fontSize="10" letterSpacing="1.7">MOD 3.00 m</text>
               <text x="400" y="268" fontSize="10" letterSpacing="1.7">EJE B-B</text>
               <text x="98" y="150" fontSize="9" letterSpacing="1.4">COTA +7.20</text>
@@ -62,7 +62,7 @@ export function HeroStructureVisual() {
           </svg>
 
           <div className="absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(to_top,rgba(10,13,18,0.82),transparent)]" />
-          <div className="hero-layer-sweep absolute -left-[32%] top-[36%] h-20 w-[68%] rotate-[12deg] border-y border-[color-mix(in_srgb,var(--color-accent)_55%,transparent)] bg-[linear-gradient(90deg,transparent,rgba(176,192,209,0.08),transparent)]" />
+          <div className="hero-layer-sweep absolute -left-[35%] top-[36%] h-20 w-[72%] rotate-[12deg] border-y border-[color-mix(in_srgb,var(--color-accent)_50%,transparent)] bg-[linear-gradient(90deg,transparent,rgba(176,192,209,0.08),transparent)] [animation-delay:1.4s] [animation-duration:3.8s] [animation-iteration-count:1]" />
         </div>
 
         <div className="grid grid-cols-[1fr_auto] gap-3 sm:gap-4">
