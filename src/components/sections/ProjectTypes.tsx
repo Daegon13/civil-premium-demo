@@ -37,9 +37,14 @@ export function ProjectTypes() {
           description="Cada encargo requiere leer el estado real del activo, ordenar prioridades y definir una estrategia de intervención viable."
         />
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {projectTypes.map((item) => (
-            <article key={item.title} className="card-lift rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-surface)_86%,#ffffff_14%),var(--color-surface))] px-5 py-5 sm:px-6 sm:py-6">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+          {projectTypes.map((item, index) => (
+            <article
+              key={item.title}
+              className={`block-evidence rounded-[var(--radius-md)] px-5 py-5 sm:px-6 sm:py-6 ${
+                index === 0 || index === 5 ? "lg:col-span-3" : "lg:col-span-2"
+              }`}
+            >
               <p className="text-sm font-semibold tracking-[-0.01em] text-[var(--color-text)]">{item.title}</p>
               <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">{item.description}</p>
             </article>

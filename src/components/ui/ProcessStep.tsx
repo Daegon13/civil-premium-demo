@@ -7,7 +7,7 @@ type ProcessStepProps = {
 
 export function ProcessStep({ step, title, detail, deliverable }: ProcessStepProps) {
   return (
-    <article className="card-lift fade-up rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-surface)_84%,#ffffff_16%),var(--color-surface))] p-5 sm:p-6" data-stagger={step}>
+    <article className="block-flow fade-up rounded-[var(--radius-md)] p-5 sm:p-6" data-stagger={step}>
       <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-accent-strong)]">Fase {step}</p>
       <h3 className="mt-3 text-[1.06rem] font-semibold tracking-[-0.01em] text-[var(--color-text)]">{title}</h3>
       <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">{detail}</p>

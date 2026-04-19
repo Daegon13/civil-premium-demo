@@ -24,8 +24,8 @@ export function TrustBlock() {
           description="Cuando hay orden técnico desde el inicio, el proyecto gana trazabilidad, previsibilidad y control operativo."
         />
 
-        <div className="grid gap-3.5 lg:grid-cols-2 lg:gap-4">
-          <article className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-surface)_88%,#ffffff_12%),var(--color-surface))] p-6 sm:p-7">
+        <div className="grid gap-3.5 lg:grid-cols-5 lg:gap-4">
+          <article className="block-evidence rounded-[var(--radius-lg)] p-6 sm:p-7 lg:col-span-3">
             <h3 className="text-sm font-semibold tracking-[0.1em] uppercase text-[var(--color-accent-strong)]">Con respaldo técnico</h3>
             <ul className="mt-4 space-y-3 text-sm text-[var(--color-text-muted)]">
               {withSupport.map((item) => (
@@ -34,7 +34,7 @@ export function TrustBlock() {
             </ul>
           </article>
 
-          <article className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-surface-muted)_84%,#ffffff_16%),var(--color-surface-muted))] p-6 sm:p-7">
+          <article className="block-evidence rounded-[var(--radius-lg)] p-6 sm:p-7 lg:col-span-2">
             <h3 className="text-sm font-semibold tracking-[0.1em] uppercase text-[var(--color-text)]">Cuando se improvisa</h3>
             <ul className="mt-4 space-y-3 text-sm text-[var(--color-text-muted)]">
               {withoutSupport.map((item) => (
