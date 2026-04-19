@@ -7,9 +7,9 @@ import { siteContent } from "@/content/siteContent";
 
 export function Hero() {
   return (
-    <section className="theme-hero section-spacing pb-14 sm:pb-16" id="inicio">
-      <div className="site-container grid items-center gap-10 md:gap-12 lg:grid-cols-[1.03fr_0.97fr] lg:gap-16">
-        <div className="space-y-7 sm:space-y-8">
+    <section className="theme-hero section-spacing pb-12 sm:pb-14" id="inicio">
+      <div className="site-container grid items-center gap-10 md:gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16 xl:grid-cols-[0.9fr_1.1fr] xl:gap-20">
+        <div className="space-y-6 sm:space-y-7">
           <div className="space-y-2">
             <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-accent-strong)]">
               Ingeniería civil premium · decisiones con respaldo técnico
@@ -23,13 +23,13 @@ export function Hero() {
             </div>
           </div>
 
-          <div className="space-y-5">
-            <h1 className="max-w-3xl text-balance text-[2rem] font-semibold leading-[1.1] tracking-[-0.03em] text-[var(--color-text)] sm:text-[2.55rem] lg:text-[3.25rem]">
+          <div className="space-y-4">
+            <h1 className="max-w-2xl text-balance text-[2.15rem] font-semibold leading-[1.04] tracking-[-0.032em] text-[var(--color-text)] sm:text-[2.7rem] lg:text-[3.05rem] xl:text-[3.25rem]">
               Dirección técnica para ejecutar obra con menos incertidumbre y más control.
             </h1>
-            <div className="flex max-w-2xl items-center gap-3">
-              <span className="mt-1 h-px w-14 bg-[color-mix(in_srgb,var(--color-accent)_58%,transparent)] sm:w-20" />
-              <p className="text-pretty text-base leading-relaxed text-[var(--color-text-muted)] sm:text-lg">
+            <div className="flex max-w-xl items-start gap-3">
+              <span className="mt-3 h-px w-14 bg-[color-mix(in_srgb,var(--color-accent)_58%,transparent)] sm:w-20" />
+              <p className="text-pretty text-[1.02rem] leading-relaxed text-[var(--color-text-muted)] sm:text-[1.08rem]">
                 Ordenamos la complejidad en un plan accionable: diagnóstico, prioridades y seguimiento técnico para
                 proteger plazo, presupuesto y cumplimiento normativo.
               </p>
@@ -44,13 +44,18 @@ export function Hero() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2.5 sm:gap-3">
-            <Link className={buttonClassName("primary")} href={siteContent.contact.calendlyLink} rel="noreferrer" target="_blank">
-              {siteContent.cta.primary}
-            </Link>
-            <Link className={buttonClassName("secondary")} href="#proceso">
-              {siteContent.cta.secondary}
-            </Link>
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-2.5 sm:gap-3">
+              <Link className={buttonClassName("primary")} href={siteContent.contact.calendlyLink} rel="noreferrer" target="_blank">
+                {siteContent.cta.primary}
+              </Link>
+              <Link className={buttonClassName("secondary")} href="#proceso">
+                {siteContent.cta.secondary}
+              </Link>
+            </div>
+            <p className="text-[0.68rem] font-medium uppercase tracking-[0.16em] text-[var(--color-text-muted)]">
+              Primera reunión en 72 h · hoja de ruta desde la sesión inicial
+            </p>
           </div>
 
           <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 sm:gap-3">
