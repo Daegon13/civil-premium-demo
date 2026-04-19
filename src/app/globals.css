@@ -1,20 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --color-background: #0f1318;
-  --color-surface: #151b22;
-  --color-surface-alt: #1b232d;
-  --color-line: #2a3340;
-  --color-text: #eaf0f7;
-  --color-muted: #a0aab8;
-  --color-accent: #7fa4c8;
-  --color-accent-strong: #99bedf;
+  --color-bg: #121418;
+  --color-surface: #171b21;
+  --color-surface-muted: #1d232b;
+  --color-border: #2d3642;
+  --color-text: #e7ebf0;
+  --color-text-muted: #9ea8b6;
+  --color-accent: #8ea3ba;
+  --color-accent-strong: #b0c0d1;
 
   --radius-sm: 0.5rem;
   --radius-md: 0.875rem;
   --radius-lg: 1.25rem;
 
-  --shadow-soft: 0 14px 40px -24px rgba(0, 0, 0, 0.55);
+  --shadow-soft: 0 20px 45px -36px rgba(0, 0, 0, 0.72);
 }
 
 * {
@@ -28,10 +28,12 @@ body {
 }
 
 body {
-  background: radial-gradient(circle at top, #16202a 0%, var(--color-background) 44%);
+  background: var(--color-bg);
   color: var(--color-text);
-  font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  font-family: Inter, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 .site-shell {
@@ -39,15 +41,81 @@ body {
 }
 
 .site-container {
-  width: min(1120px, 100% - clamp(1.25rem, 3vw, 2.5rem));
+  width: min(1140px, 100% - clamp(1.25rem, 2.8vw, 3rem));
   margin-inline: auto;
 }
 
 .section-spacing {
-  padding-block: clamp(4rem, 7vw, 7rem);
+  padding-block: clamp(3.25rem, 6vw, 6rem);
 }
 
 .section-divider {
-  border-block: 1px solid var(--color-line);
-  background: color-mix(in srgb, var(--color-surface) 82%, transparent);
+  border-top: 1px solid var(--color-border);
+}
+
+.panel {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+}
+
+.technical-grid {
+  position: relative;
+}
+
+.technical-grid::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--color-border) 58%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--color-border) 58%, transparent) 1px, transparent 1px);
+  background-size: 30px 30px;
+  opacity: 0.22;
+}
+
+@keyframes heroLineIn {
+  from {
+    opacity: 0.15;
+    stroke-dashoffset: 220;
+  }
+  to {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes layerSweep {
+  0% {
+    transform: translateX(-6%) rotate(12deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateX(165%) rotate(12deg);
+    opacity: 0;
+  }
+}
+
+.hero-draw-line {
+  stroke-dasharray: 220;
+  stroke-dashoffset: 220;
+  animation: heroLineIn 1.25s ease forwards;
+}
+
+.hero-layer-sweep {
+  animation: layerSweep 4.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-draw-line,
+  .hero-layer-sweep {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
 }
