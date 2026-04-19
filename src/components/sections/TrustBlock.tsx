@@ -16,7 +16,7 @@ const withoutSupport = [
 
 export function TrustBlock() {
   return (
-    <section className="section-spacing section-divider">
+    <section className="theme-section-emphasis section-spacing section-divider">
       <div className="site-container space-y-9">
         <SectionHeading
           eyebrow="Confianza basada en método"
