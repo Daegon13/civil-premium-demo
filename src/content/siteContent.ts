@@ -8,6 +8,11 @@ export const siteContent = {
     name: "Marin Civil Studio",
     tagline: "Claridad técnica para decisiones de obra con menor riesgo.",
   },
+  contact: {
+    email: "contacto@marincivilstudio.com",
+    phoneDisplay: "+54 11 5555 0148",
+    phoneLink: "https://wa.me/541155550148",
+  },
   sections: {
     hero: "Hero protagonista",
     problemsSolved: "Problemas que resolvemos",
