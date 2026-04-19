@@ -1,18 +1,15 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-import { siteConfig } from "@/lib/site-config";
+import { siteContent } from "@/content/siteContent";
 
 export const metadata: Metadata = {
-  title: siteConfig.name,
-  description: siteConfig.description,
+  title: siteContent.meta.title,
+  description: siteContent.meta.description,
+  metadataBase: new URL("https://civil-premium-demo.local"),
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es">
       <body>{children}</body>

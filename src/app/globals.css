@@ -1,13 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #111315;
-  --surface: #171a1d;
-  --surface-alt: #1c2024;
-  --text: #f5f7fa;
-  --muted: #a9afb8;
-  --accent: #9aacbe;
-  --line: #2a2f35;
+  --color-background: #0f1318;
+  --color-surface: #151b22;
+  --color-surface-alt: #1b232d;
+  --color-line: #2a3340;
+  --color-text: #eaf0f7;
+  --color-muted: #a0aab8;
+  --color-accent: #7fa4c8;
+  --color-accent-strong: #99bedf;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.25rem;
+
+  --shadow-soft: 0 14px 40px -24px rgba(0, 0, 0, 0.55);
 }
 
 * {
@@ -21,19 +28,18 @@ body {
 }
 
 body {
-  background: var(--background);
-  color: var(--text);
-  font-family: "Inter", "Aptos", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  background: radial-gradient(circle at top, #16202a 0%, var(--color-background) 44%);
+  color: var(--color-text);
+  font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
 }
 
 .site-shell {
-  position: relative;
   min-height: 100vh;
-  background: var(--background);
 }
 
 .site-container {
-  width: min(1120px, 100% - 2.5rem);
+  width: min(1120px, 100% - clamp(1.25rem, 3vw, 2.5rem));
   margin-inline: auto;
 }
 
@@ -41,8 +47,7 @@ body {
   padding-block: clamp(4rem, 7vw, 7rem);
 }
 
-.section-muted {
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  background: var(--surface);
+.section-divider {
+  border-block: 1px solid var(--color-line);
+  background: color-mix(in srgb, var(--color-surface) 82%, transparent);
 }

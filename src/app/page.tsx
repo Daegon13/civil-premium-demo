@@ -1,27 +1,27 @@
-import { SiteFooter } from "@/components/layout/site-footer";
-import { SiteHeader } from "@/components/layout/site-header";
-import { FinalCtaSection } from "@/components/sections/final-cta-section";
-import { HeroSection } from "@/components/sections/hero-section";
-import { ProblemsSection } from "@/components/sections/problems-section";
-import { ProcessSection } from "@/components/sections/process-section";
-import { ProjectTypesSection } from "@/components/sections/project-types-section";
-import { ServicesSection } from "@/components/sections/services-section";
-import { TrustSection } from "@/components/sections/trust-section";
+import { Footer } from "@/components/layout/Footer";
+import { Header } from "@/components/layout/Header";
+import { FinalCTA } from "@/components/sections/FinalCTA";
+import { Hero } from "@/components/sections/Hero";
+import { ProblemsSolved } from "@/components/sections/ProblemsSolved";
+import { Process } from "@/components/sections/Process";
+import { ProjectTypes } from "@/components/sections/ProjectTypes";
+import { Services } from "@/components/sections/Services";
+import { TrustBlock } from "@/components/sections/TrustBlock";
 
 export default function HomePage() {
   return (
     <div className="site-shell">
-      <SiteHeader />
+      <Header />
       <main>
-        <HeroSection />
-        <ProblemsSection />
-        <ServicesSection />
-        <ProcessSection />
-        <ProjectTypesSection />
-        <TrustSection />
-        <FinalCtaSection />
+        <Hero />
+        <ProblemsSolved />
+        <Services />
+        <Process />
+        <ProjectTypes />
+        <TrustBlock />
+        <FinalCTA />
       </main>
-      <SiteFooter />
+      <Footer />
     </div>
   );
 }
