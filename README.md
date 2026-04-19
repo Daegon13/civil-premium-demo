@@ -1,6 +1,6 @@
 # Civil Premium Demo
 
-Base limpia de una landing comercial one-page para ingeniería civil.
+Landing comercial one-page para ingeniería civil, optimizada para presentación comercial y portafolio.
 
 ## Stack
 - Next.js 16
@@ -14,6 +14,17 @@ npm run build
 npm run start
 npm run lint
 ```
+
+## Deploy en Vercel
+1. Importar el repositorio en Vercel.
+2. Definir la variable `NEXT_PUBLIC_SITE_URL` con el dominio final (por ejemplo, `https://tudominio.com`).
+3. Ejecutar deploy con configuración por defecto de Next.js.
+
+La variable `NEXT_PUBLIC_SITE_URL` se usa para canonical, Open Graph, `robots` y `sitemap`.
+
+## Variante demo
+- Ruta principal: `/`
+- Variante demo para presentaciones: `/demo`
 
 ## Estructura
 La arquitectura del proyecto y el plan del patch están documentados en:

@@ -52,6 +52,7 @@ body {
 
 .section-spacing {
   padding-block: clamp(3.5rem, 7vw, 7rem);
+  scroll-margin-top: 5.5rem;
 }
 
 .section-divider {
@@ -118,7 +119,7 @@ body {
 }
 
 .hero-layer-sweep {
-  animation: layerSweep 4.6s ease-in-out infinite;
+  animation: layerSweep 5.2s ease-in-out 2;
 }
 
 
