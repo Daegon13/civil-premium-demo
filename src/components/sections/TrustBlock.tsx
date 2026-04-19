@@ -17,16 +17,16 @@ const withoutSupport = [
 export function TrustBlock() {
   return (
     <section className="section-spacing section-divider">
-      <div className="site-container space-y-8">
+      <div className="site-container space-y-9">
         <SectionHeading
           eyebrow="Confianza basada en método"
           title="Respaldo técnico vs. improvisación: la diferencia se nota en cada decisión"
           description="Cuando hay orden técnico desde el inicio, el proyecto gana trazabilidad, previsibilidad y control operativo."
         />
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          <article className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
-            <h3 className="text-sm font-semibold tracking-[0.08em] uppercase text-[var(--color-accent-strong)]">Con respaldo técnico</h3>
+        <div className="grid gap-3.5 lg:grid-cols-2 lg:gap-4">
+          <article className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-surface)_88%,#ffffff_12%),var(--color-surface))] p-6 sm:p-7">
+            <h3 className="text-sm font-semibold tracking-[0.1em] uppercase text-[var(--color-accent-strong)]">Con respaldo técnico</h3>
             <ul className="mt-4 space-y-3 text-sm text-[var(--color-text-muted)]">
               {withSupport.map((item) => (
                 <li key={item}>• {item}</li>
@@ -34,8 +34,8 @@ export function TrustBlock() {
             </ul>
           </article>
 
-          <article className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface-muted)] p-6">
-            <h3 className="text-sm font-semibold tracking-[0.08em] uppercase text-[var(--color-text)]">Cuando se improvisa</h3>
+          <article className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-surface-muted)_84%,#ffffff_16%),var(--color-surface-muted))] p-6 sm:p-7">
+            <h3 className="text-sm font-semibold tracking-[0.1em] uppercase text-[var(--color-text)]">Cuando se improvisa</h3>
             <ul className="mt-4 space-y-3 text-sm text-[var(--color-text-muted)]">
               {withoutSupport.map((item) => (
                 <li key={item}>• {item}</li>

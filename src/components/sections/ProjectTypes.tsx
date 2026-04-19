@@ -30,7 +30,7 @@ const projectTypes = [
 export function ProjectTypes() {
   return (
     <section className="section-spacing">
-      <div className="site-container space-y-8">
+      <div className="site-container space-y-9">
         <SectionHeading
           eyebrow="Tipos de proyectos e intervenciones"
           title="Criterio técnico aplicado según contexto, no soluciones genéricas"
@@ -39,9 +39,9 @@ export function ProjectTypes() {
 
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {projectTypes.map((item) => (
-            <article key={item.title} className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-5">
-              <p className="text-sm font-semibold text-[var(--color-text)]">{item.title}</p>
-              <p className="mt-2 text-sm text-[var(--color-text-muted)]">{item.description}</p>
+            <article key={item.title} className="card-lift rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-surface)_86%,#ffffff_14%),var(--color-surface))] px-5 py-5 sm:px-6 sm:py-6">
+              <p className="text-sm font-semibold tracking-[-0.01em] text-[var(--color-text)]">{item.title}</p>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">{item.description}</p>
             </article>
           ))}
         </div>

@@ -2,13 +2,13 @@ import { GridOverlay } from "@/components/visual/GridOverlay";
 
 export function HeroStructureVisual() {
   return (
-    <div className="technical-grid relative min-h-[25rem] overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[radial-gradient(120%_95%_at_88%_8%,color-mix(in_srgb,var(--color-accent)_26%,transparent)_0%,transparent_56%),var(--color-surface)] p-5 shadow-[var(--shadow-soft)] sm:p-6">
+    <div className="technical-grid relative min-h-[23.5rem] overflow-hidden rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--color-border)_76%,var(--color-accent)_24%)] bg-[radial-gradient(120%_95%_at_88%_8%,color-mix(in_srgb,var(--color-accent)_26%,transparent)_0%,transparent_56%),var(--color-surface)] p-5 shadow-[var(--shadow-panel)] sm:min-h-[25rem] sm:p-6">
       <GridOverlay />
 
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,transparent_16%,rgba(13,17,23,0.42)_62%,rgba(9,12,16,0.78)_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,transparent_14%,rgba(13,17,23,0.4)_62%,rgba(9,12,16,0.8)_100%)]" />
 
       <div className="relative z-10 grid h-full grid-rows-[1fr_auto] gap-5">
-        <div className="relative overflow-hidden rounded-[calc(var(--radius-md)+2px)] border border-[color-mix(in_srgb,var(--color-border)_70%,var(--color-accent)_30%)] bg-[color-mix(in_srgb,var(--color-surface-muted)_86%,#0f1318)] p-4 sm:p-5">
+        <div className="relative overflow-hidden rounded-[calc(var(--radius-md)+2px)] border border-[color-mix(in_srgb,var(--color-border)_68%,var(--color-accent)_32%)] bg-[color-mix(in_srgb,var(--color-surface-muted)_86%,#0f1318)] p-4 sm:p-5">
           <div className="absolute left-4 top-4 h-2 w-16 rounded-full bg-[color-mix(in_srgb,var(--color-accent)_45%,transparent)] blur-[1px]" />
           <div className="absolute right-6 top-6 h-3 w-3 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)]" />
 

@@ -22,22 +22,22 @@ const problems = [
 export function ProblemsSolved() {
   return (
     <section className="section-spacing section-divider">
-      <div className="site-container space-y-8">
+      <div className="site-container space-y-9">
         <SectionHeading
           eyebrow="Qué resolvemos"
           title="Problemas de obra que impactan directo en plazo, costo y tranquilidad"
           description="Si el cliente entiende el riesgo, puede comprar la solución correcta. Nosotros lo hacemos visible y accionable."
         />
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-3.5 md:grid-cols-2 md:gap-4">
           {problems.map((problem, index) => (
             <article
               key={problem.title}
-              className="card-lift fade-up rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-5"
+              className="card-lift fade-up rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-surface)_86%,#ffffff_14%),var(--color-surface))] px-5 py-5 sm:px-6 sm:py-6"
               data-stagger={String(index + 1).padStart(2, "0")}
             >
-              <h3 className="text-base font-medium text-[var(--color-text)]">{problem.title}</h3>
-              <p className="mt-2 text-sm text-[var(--color-text-muted)]">{problem.detail}</p>
+              <h3 className="text-base font-semibold tracking-[-0.01em] text-[var(--color-text)]">{problem.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">{problem.detail}</p>
             </article>
           ))}
         </div>
