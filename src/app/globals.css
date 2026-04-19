@@ -112,10 +112,44 @@ body {
   animation: layerSweep 4.6s ease-in-out infinite;
 }
 
+
+
+.card-lift {
+  transition: transform 260ms ease, border-color 260ms ease, box-shadow 260ms ease;
+}
+
+.card-lift:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+  box-shadow: 0 24px 40px -34px rgba(0, 0, 0, 0.8);
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-up {
+  animation: fadeUp 620ms ease both;
+  animation-delay: calc(var(--stagger, 0) * 70ms);
+}
+
+.fade-up[data-stagger="01"] { --stagger: 1; }
+.fade-up[data-stagger="02"] { --stagger: 2; }
+.fade-up[data-stagger="03"] { --stagger: 3; }
+.fade-up[data-stagger="04"] { --stagger: 4; }
 @media (prefers-reduced-motion: reduce) {
   .hero-draw-line,
-  .hero-layer-sweep {
+  .hero-layer-sweep,
+  .fade-up {
     animation: none;
     stroke-dashoffset: 0;
+    transform: none;
   }
 }

@@ -6,25 +6,28 @@ export function Process() {
     <section className="section-spacing section-divider">
       <div className="site-container space-y-8">
         <SectionHeading
-          eyebrow="Proceso"
-          title="Secuencia operativa clara, técnica y auditable"
-          description="Cada fase incorpora entregables verificables para mantener trazabilidad y control de decisiones durante todo el ciclo del proyecto."
+          eyebrow="Cómo trabajamos"
+          title="Un proceso breve, técnico y transparente"
+          description="El cliente siempre sabe en qué etapa está el proyecto, qué se entrega y cuál es el próximo paso."
         />
         <div className="grid gap-4 md:grid-cols-3">
           <ProcessStep
             step="01"
-            title="Levantamiento y diagnóstico"
-            detail="Revisión de antecedentes, inspección técnica inicial y definición de condicionantes críticos."
+            title="Diagnosticar"
+            detail="Levantamiento en terreno y revisión de antecedentes para identificar riesgos y oportunidades reales."
+            deliverable="Resultado: prioridades definidas"
           />
           <ProcessStep
             step="02"
-            title="Estrategia y planificación"
-            detail="Diseño de ruta de intervención con hitos, riesgos priorizados y esquema de control por etapa."
+            title="Planificar"
+            detail="Definimos hoja de ruta, hitos de control y criterios técnicos para ejecutar sin improvisar."
+            deliverable="Resultado: plan validado"
           />
           <ProcessStep
             step="03"
-            title="Ejecución y control técnico"
-            detail="Supervisión en terreno, informes de avance y ajustes sustentados por criterio de ingeniería."
+            title="Ejecutar y controlar"
+            detail="Acompañamos la obra con seguimiento técnico, alertas tempranas y decisiones sustentadas."
+            deliverable="Resultado: avance trazable"
           />
         </div>
       </div>
