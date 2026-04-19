@@ -4,18 +4,21 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 const services = [
   {
     index: "01",
-    name: "Dirección técnica de obra",
-    description: "Supervisión integral con seguimiento de calidad, hitos críticos y coordinación entre equipos de proyecto y ejecución.",
+    name: "Diagnóstico técnico inicial",
+    description: "Visita, revisión documental y mapa de riesgos para decidir con datos antes de invertir fuerte.",
+    outcome: "Entregable: informe priorizado en 7 días",
   },
   {
     index: "02",
-    name: "Regularización y documentación",
-    description: "Gestión técnica y documental para actualizar el estado normativo de activos y reducir contingencias futuras.",
+    name: "Dirección y control de obra",
+    description: "Supervisión de hitos críticos, coordinación de especialidades y control de calidad en terreno.",
+    outcome: "Entregable: reportes quincenales trazables",
   },
   {
     index: "03",
-    name: "Diagnóstico estructural",
-    description: "Evaluación de patologías, priorización de intervenciones y plan de estabilidad con base en evidencia técnica.",
+    name: "Regularización técnica",
+    description: "Ordenamos antecedentes, planos y respaldos para cumplir exigencias normativas sin fricciones.",
+    outcome: "Entregable: carpeta técnica lista para gestión",
   },
 ];
 
@@ -24,9 +27,9 @@ export function Services() {
     <section className="section-spacing">
       <div className="site-container space-y-8">
         <SectionHeading
-          eyebrow="Servicios núcleo"
-          title="Capacidades técnicas para proyectos con exigencia real"
-          description="Un portafolio sobrio y especializado para clientes que necesitan criterio de ingeniería, no soluciones genéricas."
+          eyebrow="Servicios"
+          title="Servicios claros para comprar con confianza"
+          description="Sin paquetes confusos: cada servicio tiene alcance, criterio técnico y un resultado verificable."
         />
         <div className="grid gap-4 md:grid-cols-3">
           {services.map((service) => (

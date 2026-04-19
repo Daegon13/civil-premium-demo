@@ -1,10 +1,22 @@
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
-const risks = [
-  "Sobrecostos por indefinición técnica en etapas tempranas.",
-  "Retrabajos por coordinación deficiente entre diseño y obra.",
-  "Demoras por falta de control documental y trazabilidad.",
-  "Exposición a incumplimientos normativos evitables.",
+const problems = [
+  {
+    title: "La obra parte sin definiciones críticas",
+    detail: "Detectamos vacíos técnicos antes de licitar o ejecutar, evitando decisiones caras en terreno.",
+  },
+  {
+    title: "El presupuesto se dispara por cambios tardíos",
+    detail: "Traducimos ingeniería a alcances y prioridades para que cada peso tenga justificación técnica.",
+  },
+  {
+    title: "Aparecen observaciones normativas al final",
+    detail: "Regularizamos documentación y cumplimiento desde el inicio para no frenar entregas ni recepciones.",
+  },
+  {
+    title: "Nadie tiene trazabilidad de decisiones",
+    detail: "Estructuramos control técnico e informes claros para saber qué se decidió, cuándo y por qué.",
+  },
 ];
 
 export function ProblemsSolved() {
@@ -12,15 +24,20 @@ export function ProblemsSolved() {
     <section className="section-spacing section-divider">
       <div className="site-container space-y-8">
         <SectionHeading
-          eyebrow="Problemas que resolvemos"
-          title="Intervenimos antes de que la complejidad se convierta en costo"
-          description="Nuestro marco operativo está orientado a detectar desviaciones tempranas y corregirlas con criterios medibles."
+          eyebrow="Qué resolvemos"
+          title="Problemas de obra que impactan directo en plazo, costo y tranquilidad"
+          description="Si el cliente entiende el riesgo, puede comprar la solución correcta. Nosotros lo hacemos visible y accionable."
         />
 
-        <div className="grid gap-3 md:grid-cols-2">
-          {risks.map((risk) => (
-            <article key={risk} className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-4">
-              <p className="text-sm text-[var(--color-text-muted)]">{risk}</p>
+        <div className="grid gap-4 md:grid-cols-2">
+          {problems.map((problem, index) => (
+            <article
+              key={problem.title}
+              className="card-lift fade-up rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-5"
+              data-stagger={String(index + 1).padStart(2, "0")}
+            >
+              <h3 className="text-base font-medium text-[var(--color-text)]">{problem.title}</h3>
+              <p className="mt-2 text-sm text-[var(--color-text-muted)]">{problem.detail}</p>
             </article>
           ))}
         </div>
