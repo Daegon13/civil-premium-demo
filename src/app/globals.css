@@ -76,3 +76,46 @@ body {
   background-size: 30px 30px;
   opacity: 0.22;
 }
+
+@keyframes heroLineIn {
+  from {
+    opacity: 0.15;
+    stroke-dashoffset: 220;
+  }
+  to {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes layerSweep {
+  0% {
+    transform: translateX(-6%) rotate(12deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateX(165%) rotate(12deg);
+    opacity: 0;
+  }
+}
+
+.hero-draw-line {
+  stroke-dasharray: 220;
+  stroke-dashoffset: 220;
+  animation: heroLineIn 1.25s ease forwards;
+}
+
+.hero-layer-sweep {
+  animation: layerSweep 4.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-draw-line,
+  .hero-layer-sweep {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
