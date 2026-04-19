@@ -3,7 +3,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 
 export function Process() {
   return (
-    <section className="section-spacing section-divider" id="proceso">
+    <section className="theme-section-emphasis section-spacing section-divider" id="proceso">
       <div className="site-container space-y-9">
         <SectionHeading
           eyebrow="Cómo trabajamos"

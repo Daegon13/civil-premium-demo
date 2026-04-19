@@ -7,7 +7,7 @@ import { siteContent } from "@/content/siteContent";
 
 export function Hero() {
   return (
-    <section className="section-spacing pb-14 sm:pb-16" id="inicio">
+    <section className="theme-hero section-spacing pb-14 sm:pb-16" id="inicio">
       <div className="site-container grid items-center gap-10 md:gap-12 lg:grid-cols-[1.03fr_0.97fr] lg:gap-16">
         <div className="space-y-7 sm:space-y-8">
           <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-accent-strong)]">

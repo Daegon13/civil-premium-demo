@@ -1,22 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  --color-bg: #11141a;
-  --color-surface: #171c24;
-  --color-surface-muted: #1d2530;
-  --color-border: #2f3a48;
-  --color-border-strong: #415268;
-  --color-text: #e8edf3;
-  --color-text-muted: #a7b3c2;
-  --color-accent: #94adc7;
-  --color-accent-strong: #bfd0e2;
+  --color-bg: #e6ebef;
+  --color-surface: #f4f7fa;
+  --color-surface-muted: #dde4eb;
+  --color-border: #a8b5c2;
+  --color-border-strong: #6e8194;
+  --color-text: #1e2a36;
+  --color-text-muted: #4f6072;
+  --color-accent: #2f648f;
+  --color-accent-strong: #1f4667;
+  --color-accent-contrast: #f3f8fc;
 
-  --radius-sm: 0.5rem;
-  --radius-md: 0.875rem;
-  --radius-lg: 1.25rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
 
-  --shadow-soft: 0 28px 55px -38px rgba(0, 0, 0, 0.8);
-  --shadow-panel: 0 24px 42px -34px rgba(0, 0, 0, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  --space-section-y: clamp(4.5rem, 7.4vw, 7.5rem);
+  --space-section-compact: clamp(3.5rem, 6vw, 5.25rem);
+  --space-stack-sm: 0.875rem;
+  --space-stack-md: 1.375rem;
+  --space-stack-lg: 2.125rem;
+
+  --shadow-soft: 0 20px 36px -28px rgba(24, 40, 58, 0.36);
+  --shadow-panel: 0 28px 42px -32px rgba(27, 44, 63, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  --shadow-cta: 0 22px 44px -26px rgba(18, 46, 74, 0.36);
 }
 
 * {
@@ -41,8 +49,9 @@ body {
 .site-shell {
   min-height: 100vh;
   background:
-    radial-gradient(100% 70% at 84% 0%, rgba(146, 169, 194, 0.09), transparent 52%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.01), transparent 18%);
+    linear-gradient(112deg, rgba(59, 94, 127, 0.1) 0%, transparent 46%),
+    radial-gradient(62% 68% at 98% 0%, rgba(68, 104, 140, 0.16), transparent 56%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.56), rgba(255, 255, 255, 0.22));
 }
 
 .site-container {
@@ -51,23 +60,58 @@ body {
 }
 
 .section-spacing {
-  padding-block: clamp(3.5rem, 7vw, 7rem);
+  padding-block: var(--space-section-y);
   scroll-margin-top: 5.5rem;
+}
+
+.section-spacing-compact {
+  padding-block: var(--space-section-compact);
 }
 
 .section-divider {
   border-top: 1px solid var(--color-border);
 }
 
+/* Reglas de uso para reforzar identidad de ingeniería estructural */
+.theme-hero {
+  position: relative;
+}
+
+.theme-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--color-border) 35%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--color-border) 28%, transparent) 1px, transparent 1px);
+  background-size: 80px 80px;
+  opacity: 0.18;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.58), transparent 70%);
+}
+
+.theme-section {
+  background: transparent;
+}
+
+.theme-section-emphasis {
+  background: color-mix(in srgb, var(--color-surface) 84%, white 16%);
+}
+
 .panel {
-  border: 1px solid var(--color-border);
+  border: 1px solid color-mix(in srgb, var(--color-border) 82%, var(--color-border-strong) 18%);
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--color-surface) 88%, #ffffff 12%) 0%,
-    var(--color-surface) 72%
+    color-mix(in srgb, var(--color-surface) 86%, white 14%) 0%,
+    color-mix(in srgb, var(--color-surface) 84%, var(--color-surface-muted) 16%) 100%
   );
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-panel);
+}
+
+.panel-cta {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-cta);
 }
 
 .technical-grid {
@@ -81,10 +125,10 @@ body {
   inset: 0;
   border-radius: inherit;
   background-image:
-    linear-gradient(to right, color-mix(in srgb, var(--color-border) 58%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in srgb, var(--color-border) 58%, transparent) 1px, transparent 1px);
+    linear-gradient(to right, color-mix(in srgb, var(--color-border-strong) 32%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--color-border-strong) 32%, transparent) 1px, transparent 1px);
   background-size: 30px 30px;
-  opacity: 0.22;
+  opacity: 0.3;
 }
 
 @keyframes heroLineIn {
@@ -122,17 +166,15 @@ body {
   animation: layerSweep 5.2s ease-in-out 2;
 }
 
-
-
 .card-lift {
   transition: transform 260ms ease, border-color 260ms ease, box-shadow 260ms ease, background-color 260ms ease;
 }
 
 .card-lift:hover {
   transform: translateY(-4px);
-  border-color: color-mix(in srgb, var(--color-accent) 44%, var(--color-border));
-  box-shadow: 0 28px 45px -34px rgba(0, 0, 0, 0.86);
-  background-color: color-mix(in srgb, var(--color-surface) 88%, #202733 12%);
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-soft);
+  background-color: color-mix(in srgb, var(--color-surface) 68%, white 32%);
 }
 
 @keyframes fadeUp {
@@ -155,6 +197,7 @@ body {
 .fade-up[data-stagger="02"] { --stagger: 2; }
 .fade-up[data-stagger="03"] { --stagger: 3; }
 .fade-up[data-stagger="04"] { --stagger: 4; }
+
 @media (max-width: 640px) {
   .section-spacing {
     padding-block: 3.75rem;

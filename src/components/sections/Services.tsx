@@ -24,7 +24,7 @@ const services = [
 
 export function Services() {
   return (
-    <section className="section-spacing">
+    <section className="theme-section section-spacing">
       <div className="site-container space-y-9">
         <SectionHeading
           eyebrow="Servicios"

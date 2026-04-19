@@ -6,9 +6,9 @@ import { siteContent } from "@/content/siteContent";
 
 export function FinalCTA() {
   return (
-    <section className="section-spacing" id="contacto">
+    <section className="theme-section section-spacing section-spacing-compact" id="contacto">
       <div className="site-container">
-        <div className="panel p-7 sm:p-10">
+        <div className="panel panel-cta p-7 sm:p-10">
           <SectionHeading
             eyebrow="Próximo paso"
             title="Si estás por definir una decisión de obra, conversemos"
