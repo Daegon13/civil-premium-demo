@@ -1,21 +1,47 @@
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
-const projectTypes = ["Obra nueva residencial", "Ampliaciones y refuerzos", "Regularizaciones complejas", "Infraestructura liviana privada"];
+const projectTypes = [
+  {
+    title: "Obra nueva residencial",
+    description: "Definición estructural y soporte técnico desde anteproyecto hasta ejecución.",
+  },
+  {
+    title: "Reformas y ampliaciones",
+    description: "Intervenciones en activos existentes con criterios de compatibilidad y seguridad.",
+  },
+  {
+    title: "Regularizaciones técnicas",
+    description: "Orden documental y validación estructural para destrabar procesos administrativos.",
+  },
+  {
+    title: "Patologías y refuerzos",
+    description: "Diagnóstico técnico y propuesta de intervención para recuperar desempeño.",
+  },
+  {
+    title: "Adecuaciones para habilitación",
+    description: "Ajustes técnicos coordinados con requerimientos normativos y operativos.",
+  },
+  {
+    title: "Supervisión de ejecución",
+    description: "Control de criterios en obra para reducir desvíos y decisiones improvisadas.",
+  },
+];
 
 export function ProjectTypes() {
   return (
     <section className="section-spacing">
       <div className="site-container space-y-8">
         <SectionHeading
-          eyebrow="Tipologías de proyecto"
-          title="Experiencia aplicada en proyectos civiles de escala acotada y alta exigencia"
-          description="Adaptamos la estrategia técnica según el tipo de activo, su condición estructural y el contexto regulatorio de cada encargo."
+          eyebrow="Tipos de proyectos e intervenciones"
+          title="Criterio técnico aplicado según contexto, no soluciones genéricas"
+          description="Cada encargo requiere leer el estado real del activo, ordenar prioridades y definir una estrategia de intervención viable."
         />
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {projectTypes.map((type) => (
-            <article key={type} className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-5">
-              <p className="text-sm font-medium text-[var(--color-text)]">{type}</p>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {projectTypes.map((item) => (
+            <article key={item.title} className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-5">
+              <p className="text-sm font-semibold text-[var(--color-text)]">{item.title}</p>
+              <p className="mt-2 text-sm text-[var(--color-text-muted)]">{item.description}</p>
             </article>
           ))}
         </div>
