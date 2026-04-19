@@ -25,13 +25,13 @@ const services = [
 export function Services() {
   return (
     <section className="section-spacing">
-      <div className="site-container space-y-8">
+      <div className="site-container space-y-9">
         <SectionHeading
           eyebrow="Servicios"
           title="Servicios claros para comprar con confianza"
           description="Sin paquetes confusos: cada servicio tiene alcance, criterio técnico y un resultado verificable."
         />
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-3.5 md:grid-cols-3 md:gap-4">
           {services.map((service) => (
             <ServiceCard key={service.index} {...service} />
           ))}

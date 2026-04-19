@@ -1,20 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --color-bg: #121418;
-  --color-surface: #171b21;
-  --color-surface-muted: #1d232b;
-  --color-border: #2d3642;
-  --color-text: #e7ebf0;
-  --color-text-muted: #9ea8b6;
-  --color-accent: #8ea3ba;
-  --color-accent-strong: #b0c0d1;
+  --color-bg: #11141a;
+  --color-surface: #171c24;
+  --color-surface-muted: #1d2530;
+  --color-border: #2f3a48;
+  --color-border-strong: #415268;
+  --color-text: #e8edf3;
+  --color-text-muted: #a7b3c2;
+  --color-accent: #94adc7;
+  --color-accent-strong: #bfd0e2;
 
   --radius-sm: 0.5rem;
   --radius-md: 0.875rem;
   --radius-lg: 1.25rem;
 
-  --shadow-soft: 0 20px 45px -36px rgba(0, 0, 0, 0.72);
+  --shadow-soft: 0 28px 55px -38px rgba(0, 0, 0, 0.8);
+  --shadow-panel: 0 24px 42px -34px rgba(0, 0, 0, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 * {
@@ -38,6 +40,9 @@ body {
 
 .site-shell {
   min-height: 100vh;
+  background:
+    radial-gradient(100% 70% at 84% 0%, rgba(146, 169, 194, 0.09), transparent 52%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.01), transparent 18%);
 }
 
 .site-container {
@@ -46,7 +51,7 @@ body {
 }
 
 .section-spacing {
-  padding-block: clamp(3.25rem, 6vw, 6rem);
+  padding-block: clamp(3.5rem, 7vw, 7rem);
 }
 
 .section-divider {
@@ -55,9 +60,13 @@ body {
 
 .panel {
   border: 1px solid var(--color-border);
-  background: var(--color-surface);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-surface) 88%, #ffffff 12%) 0%,
+    var(--color-surface) 72%
+  );
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-soft);
+  box-shadow: var(--shadow-panel);
 }
 
 .technical-grid {
@@ -115,13 +124,14 @@ body {
 
 
 .card-lift {
-  transition: transform 260ms ease, border-color 260ms ease, box-shadow 260ms ease;
+  transition: transform 260ms ease, border-color 260ms ease, box-shadow 260ms ease, background-color 260ms ease;
 }
 
 .card-lift:hover {
-  transform: translateY(-3px);
-  border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
-  box-shadow: 0 24px 40px -34px rgba(0, 0, 0, 0.8);
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--color-accent) 44%, var(--color-border));
+  box-shadow: 0 28px 45px -34px rgba(0, 0, 0, 0.86);
+  background-color: color-mix(in srgb, var(--color-surface) 88%, #202733 12%);
 }
 
 @keyframes fadeUp {
@@ -144,6 +154,12 @@ body {
 .fade-up[data-stagger="02"] { --stagger: 2; }
 .fade-up[data-stagger="03"] { --stagger: 3; }
 .fade-up[data-stagger="04"] { --stagger: 4; }
+@media (max-width: 640px) {
+  .section-spacing {
+    padding-block: 3.75rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-draw-line,
   .hero-layer-sweep,
