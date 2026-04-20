@@ -1,10 +1,10 @@
 """
-Blender bpy script (v2): Hero architectural pavilion premium/commercial (GLB-ready).
+Blender bpy script (v2 refactor): Hero architectural pavilion premium/commercial (GLB-ready).
 
-Objetivo:
-- Segunda versión con más intención visual para una landing web.
-- Mejor silueta y proporciones elegantes sin perder optimización low/mid poly.
-- Compatibilidad con exportación glTF/GLB.
+Objetivo de esta refactorización:
+- Elevar la pieza de blockout técnico a objeto hero premium para web.
+- Introducir composición intencional: jerarquía estructural, vacío central y silueta memorable.
+- Mantener geometría low/mid poly limpia y compatible con glTF/GLB.
 
 Uso rápido:
 1) Abrir Blender.
@@ -22,52 +22,56 @@ from mathutils import Vector
 # CONFIGURACIÓN GLOBAL (editable)
 # ==========================================================
 CONFIG = {
-    # Escala base y proporciones generales
-    "base_length": 20.0,
-    "base_width": 9.0,
-    "platform_height": 0.38,
-    "platform_chamfer": 0.035,
+    # Escala general
+    "base_length": 22.0,
+    "base_width": 9.6,
+    "platform_height": 0.36,
+    "platform_chamfer": 0.04,
 
-    # Ritmo estructural (menos repetitivo que el blockout)
-    "num_portals": 5,
-    "portal_spacing": 3.35,
-    "portal_depth": 0.20,
+    # Estructura principal (portales) con variación controlada
+    "num_portals": 6,
+    "portal_spacing": 3.15,
+    "portal_depth": 0.22,
     "portal_leg_width": 0.24,
-    "portal_head_height": 5.35,
-    "portal_variation": 0.18,  # variación suave en escala para romper repetición
+    "portal_head_height": 5.4,
+    "portal_thickness": 0.18,
+    "portal_center_emphasis": 0.24,   # eleva y robustece el tramo central
+    "portal_rotation_deg": 2.2,        # ligera torsión progresiva para evitar repetición rígida
 
-    # Cubierta delgada y limpia
-    "roof_thickness": 0.115,
-    "roof_width_scale": 0.93,
-    "roof_overhang_x": 1.35,
-    "roof_overhang_y": 0.35,
-    "roof_tilt_deg": 3.2,
+    # Cubierta premium (doble plano + canto metálico)
+    "roof_thickness": 0.11,
+    "roof_overhang_x": 1.6,
+    "roof_overhang_y": 0.46,
+    "roof_peak_lift": 0.64,            # cresta para silueta más escultórica
+    "roof_tilt_deg": 2.7,
+    "roof_split_gap": 0.34,
 
-    # Aletas/paneles verticales integrados (intencionales)
-    "fin_count_per_side": 4,
-    "fin_thickness": 0.09,
-    "fin_height": 3.2,
-    "fin_depth": 0.56,
-    "fin_inset_x": 1.1,
+    # Paneles laterales (composición intencional)
+    "fin_thickness": 0.08,
+    "fin_depth": 0.58,
+    "fin_height": 3.05,
+    "fin_inset_y": 0.6,
 
-    # Vidrio continuo lateral
-    "glass_height": 2.85,
-    "glass_thickness": 0.045,
-    "glass_inset_y": 0.58,
+    # Cierre de vidrio
+    "glass_height": 2.9,
+    "glass_thickness": 0.04,
 
-    # Composición central (en vez de monolito rígido)
-    "spine_width": 0.42,
-    "spine_height": 0.22,
+    # Núcleo/recorrido central
+    "void_length_ratio": 0.58,
+    "spine_width": 0.36,
+    "spine_height": 0.2,
+    "walkway_width": 1.35,
+    "walkway_thickness": 0.1,
 
-    # Escena comercial
-    "ground_size": 54.0,
-    "background_strength": 0.48,
+    # Escena
+    "ground_size": 60.0,
+    "background_strength": 0.46,
 
     # Exportación GLB
     "do_export_glb": False,
-    "export_path": "//hero_pavilion_premium_v2.glb",  # // = relativo al .blend
+    "export_path": "//hero_pavilion_premium_v2.glb",
 
-    # Ayuda visual
+    # Vista en Blender
     "set_viewport_shading_to_material": True,
 }
 
@@ -152,11 +156,16 @@ def create_box(name, size, location, collection, material=None, rotation=(0.0, 0
     return obj
 
 
+def arch_bias(t):
+    """Curva suave (0..1) con más peso en el centro para composición."""
+    return 1.0 - abs((t * 2.0) - 1.0)
+
+
 # ==========================================================
 # MATERIALES (3 materiales principales)
 # ==========================================================
 def create_materials(cfg):
-    """Materiales PBR sobrios: hormigón, metal oscuro y vidrio."""
+    """Materiales sobrios: hormigón, metal oscuro y vidrio."""
     mats = {}
 
     def set_bsdf_input(bsdf_node, socket_names, value):
@@ -180,7 +189,7 @@ def create_materials(cfg):
     metal.use_nodes = True
     bsdf = metal.node_tree.nodes.get("Principled BSDF")
     bsdf.inputs["Base Color"].default_value = (0.06, 0.07, 0.09, 1.0)
-    bsdf.inputs["Roughness"].default_value = 0.26
+    bsdf.inputs["Roughness"].default_value = 0.24
     bsdf.inputs["Metallic"].default_value = 0.98
     mats["metal"] = metal
 
@@ -188,10 +197,10 @@ def create_materials(cfg):
     glass = bpy.data.materials.new("M_Glass")
     glass.use_nodes = True
     bsdf = glass.node_tree.nodes.get("Principled BSDF")
-    bsdf.inputs["Base Color"].default_value = (0.76, 0.86, 0.92, 1.0)
+    bsdf.inputs["Base Color"].default_value = (0.78, 0.86, 0.92, 1.0)
     bsdf.inputs["Roughness"].default_value = 0.05
     bsdf.inputs["Metallic"].default_value = 0.0
-    set_bsdf_input(bsdf, ["Transmission Weight", "Transmission"], 0.92)
+    set_bsdf_input(bsdf, ["Transmission Weight", "Transmission"], 0.93)
     bsdf.inputs["IOR"].default_value = 1.45
 
     glass.blend_method = 'BLEND'
@@ -204,191 +213,242 @@ def create_materials(cfg):
     bpy.context.scene.world = world
     world.use_nodes = True
     bg = world.node_tree.nodes.get("Background")
-    bg.inputs[0].default_value = (0.035, 0.038, 0.045, 1.0)
+    bg.inputs[0].default_value = (0.034, 0.037, 0.043, 1.0)
     bg.inputs[1].default_value = cfg["background_strength"]
 
     return mats
 
 
 # ==========================================================
-# CONSTRUCCIÓN DE PIEZA HERO PREMIUM
+# PIEZA HERO: composición, estructura y vacío
 # ==========================================================
-def build_hero_pavilion(cfg, col, mats):
-    """
-    Construye una pieza arquitectónica más comercial:
-    - Plataforma refinada
-    - Portales con variación rítmica (menos repetición)
-    - Cubierta delgada flotante
-    - Paneles/fins laterales intencionales + vidrio continuo
-    - Volumen central reemplazado por espina compositiva minimal
-    """
-    # ---------- Medidas derivadas ----------
-    n = cfg["num_portals"]
-    spacing = cfg["portal_spacing"]
-    total_x = (n - 1) * spacing
-    x_start = -total_x * 0.5
-
-    base_len = cfg["base_length"]
-    base_w = cfg["base_width"]
+def build_platform(cfg, col, mats):
+    """Plataforma en dos niveles para presentación tipo producto hero."""
     plinth_h = cfg["platform_height"]
 
-    leg_w = cfg["portal_leg_width"]
-    portal_d = cfg["portal_depth"]
-    head_z = cfg["portal_head_height"]
-
-    # ---------- 1) Plataforma ----------
     platform = create_box(
         name="BasePlatform",
-        size=(base_len, base_w, plinth_h),
+        size=(cfg["base_length"], cfg["base_width"], plinth_h),
         location=(0.0, 0.0, plinth_h * 0.5),
         collection=col,
         material=mats["concrete"],
     )
     add_bevel_modifier(platform, amount=cfg["platform_chamfer"], segments=1)
 
-    # Base secundaria (zócalo) para hacer la pieza más "producto" de hero
-    plinth = create_box(
+    top_plinth = create_box(
         name="DisplayPlinth",
-        size=(base_len * 0.82, base_w * 0.74, 0.14),
-        location=(0.0, 0.0, plinth_h + 0.07),
+        size=(cfg["base_length"] * 0.84, cfg["base_width"] * 0.76, 0.12),
+        location=(0.0, 0.0, plinth_h + 0.06),
         collection=col,
         material=mats["concrete"],
     )
-    add_bevel_modifier(plinth, amount=0.018, segments=1)
+    add_bevel_modifier(top_plinth, amount=0.018, segments=1)
 
-    # ---------- 2) Portales con variación sutil ----------
-    clear_y = base_w * 0.5 - leg_w * 0.6 - 0.42
+    return platform
+
+
+def build_portals(cfg, col, mats):
+    """Estructura principal con variación controlada de altura/espesor/inclinación."""
+    n = cfg["num_portals"]
+    spacing = cfg["portal_spacing"]
+    total_x = (n - 1) * spacing
+    x_start = -total_x * 0.5
+
+    plinth_h = cfg["platform_height"]
+    clear_y = cfg["base_width"] * 0.5 - cfg["portal_leg_width"] * 0.65 - 0.48
+
+    head_base = cfg["portal_head_height"]
+    head_thk = cfg["portal_thickness"]
+    leg_w = cfg["portal_leg_width"]
+    leg_d = cfg["portal_depth"]
 
     for i in range(n):
+        t = i / max(1, n - 1)
+        center_boost = arch_bias(t)
+
+        # Variación compositiva: centro más alto y extremos ligeramente abiertos
+        h_scale = 1.0 + cfg["portal_center_emphasis"] * center_boost
+        leg_height = head_base * h_scale
+        beam_thickness = head_thk * (0.95 + 0.18 * center_boost)
+        beam_width_y = (clear_y * 2.0) + leg_w * (0.70 + 0.14 * center_boost)
+
         x = x_start + i * spacing
-
-        # Variación simétrica para evitar repetición excesiva
-        center_dist = abs(i - (n - 1) * 0.5)
-        taper = 1.0 - (center_dist / max(1.0, (n - 1) * 0.5)) * cfg["portal_variation"]
-
-        leg_height = head_z * taper
-        beam_thickness = 0.19 * taper
-        beam_width_y = (clear_y * 2.0) + leg_w * 0.62
+        yaw = math.radians((t - 0.5) * 2.0 * cfg["portal_rotation_deg"])
 
         z_leg = plinth_h + leg_height * 0.5
         z_beam = plinth_h + leg_height - beam_thickness * 0.5
 
-        # Pierna izquierda
         left_leg = create_box(
             name=f"PortalLegL_{i:02d}",
-            size=(leg_w, portal_d, leg_height),
+            size=(leg_w, leg_d, leg_height),
             location=(x, -clear_y, z_leg),
+            rotation=(0.0, 0.0, yaw),
             collection=col,
             material=mats["metal"],
         )
-
-        # Pierna derecha
         right_leg = create_box(
             name=f"PortalLegR_{i:02d}",
-            size=(leg_w, portal_d, leg_height),
+            size=(leg_w, leg_d, leg_height),
             location=(x, clear_y, z_leg),
+            rotation=(0.0, 0.0, yaw),
             collection=col,
             material=mats["metal"],
         )
-
-        # Cabezal
         head = create_box(
             name=f"PortalHead_{i:02d}",
             size=(leg_w, beam_width_y, beam_thickness),
             location=(x, 0.0, z_beam),
+            rotation=(0.0, 0.0, yaw),
             collection=col,
             material=mats["metal"],
         )
 
-        # Bisel mínimo sólo en elementos principales
-        if i in {0, n - 1, int((n - 1) * 0.5)}:
-            add_bevel_modifier(left_leg, amount=0.012, segments=1)
-            add_bevel_modifier(right_leg, amount=0.012, segments=1)
-            add_bevel_modifier(head, amount=0.012, segments=1)
+        if i in {0, n - 1, n // 2}:
+            add_bevel_modifier(left_leg, amount=0.011, segments=1)
+            add_bevel_modifier(right_leg, amount=0.011, segments=1)
+            add_bevel_modifier(head, amount=0.011, segments=1)
 
-    # ---------- 3) Cubierta delgada ----------
+    return total_x, clear_y
+
+
+def build_roof(cfg, col, mats, total_x):
+    """Cubierta elegante con doble ala inclinada y nervio central liviano."""
     roof_len = total_x + cfg["roof_overhang_x"] * 2.0
-    roof_w = base_w * cfg["roof_width_scale"] + cfg["roof_overhang_y"]
-    roof_z = plinth_h + head_z + cfg["roof_thickness"] * 0.72
-    roof_rot = (math.radians(cfg["roof_tilt_deg"]), 0.0, 0.0)
+    roof_w_half = (cfg["base_width"] + cfg["roof_overhang_y"] * 2.0) * 0.5
+    plinth_h = cfg["platform_height"]
 
-    roof = create_box(
-        name="RoofPlane",
-        size=(roof_len, roof_w, cfg["roof_thickness"]),
-        location=(0.0, 0.0, roof_z),
+    roof_base_z = plinth_h + cfg["portal_head_height"] + 0.36
+    roof_pitch = math.radians(cfg["roof_tilt_deg"])
+    split = cfg["roof_split_gap"]
+
+    # Ala izquierda
+    roof_left = create_box(
+        name="RoofWing_Left",
+        size=(roof_len, roof_w_half - split * 0.5, cfg["roof_thickness"]),
+        location=(0.0, -(roof_w_half + split) * 0.25, roof_base_z + cfg["roof_peak_lift"] * 0.35),
+        rotation=(roof_pitch, 0.0, math.radians(-0.8)),
         collection=col,
         material=mats["concrete"],
-        rotation=roof_rot,
     )
-    add_bevel_modifier(roof, amount=0.01, segments=1)
 
-    # Perfil metálico fino para lectura de borde premium
-    roof_trim = create_box(
-        name="RoofEdgeTrim",
-        size=(roof_len * 0.97, roof_w * 0.965, 0.03),
-        location=(0.0, 0.0, roof_z - cfg["roof_thickness"] * 0.32),
+    # Ala derecha
+    roof_right = create_box(
+        name="RoofWing_Right",
+        size=(roof_len, roof_w_half - split * 0.5, cfg["roof_thickness"]),
+        location=(0.0, (roof_w_half + split) * 0.25, roof_base_z + cfg["roof_peak_lift"] * 0.62),
+        rotation=(-roof_pitch * 0.7, 0.0, math.radians(0.9)),
+        collection=col,
+        material=mats["concrete"],
+    )
+
+    # Nervio/canto metálico para lectura premium de la cresta
+    ridge = create_box(
+        name="RoofRidgeTrim",
+        size=(roof_len * 0.95, split * 0.9, cfg["roof_thickness"] * 0.55),
+        location=(0.0, 0.0, roof_base_z + cfg["roof_peak_lift"] * 0.62),
         collection=col,
         material=mats["metal"],
-        rotation=roof_rot,
     )
 
-    # ---------- 4) Panels laterales intencionales + vidrio ----------
-    fin_count = max(2, cfg["fin_count_per_side"])
-    fin_span_x = total_x + spacing * 0.78
-    fin_step = fin_span_x / (fin_count - 1)
-    fin_x0 = -fin_span_x * 0.5
+    add_bevel_modifier(roof_left, amount=0.01, segments=1)
+    add_bevel_modifier(roof_right, amount=0.01, segments=1)
+    add_bevel_modifier(ridge, amount=0.008, segments=1)
 
-    fin_z = plinth_h + cfg["fin_height"] * 0.5
-    fin_y = base_w * 0.5 - cfg["glass_inset_y"]
+
+def build_side_composition(cfg, col, mats, total_x):
+    """Paneles laterales redistribuidos con patrón asimétrico equilibrado + vidrio."""
+    plinth_h = cfg["platform_height"]
+    side_y = cfg["base_width"] * 0.5 - cfg["fin_inset_y"]
+
+    # Distribución intencional (no uniforme): densifica acceso central + respiración en extremos
+    normalized_positions = [-1.0, -0.63, -0.28, 0.08, 0.44, 0.82]
+    x_half_span = (total_x * 0.5) + cfg["portal_spacing"] * 0.34
 
     for side in (-1.0, 1.0):
-        for j in range(fin_count):
-            x_fin = fin_x0 + j * fin_step
-
-            # Pequeño gradiente de altura para dinámica visual
-            t = j / (fin_count - 1)
-            h_scale = 0.9 + 0.2 * (1.0 - abs(t - 0.5) * 2.0)
+        for idx, npos in enumerate(normalized_positions):
+            x = npos * x_half_span
+            t = (idx / max(1, len(normalized_positions) - 1))
+            center_boost = arch_bias(t)
+            h = cfg["fin_height"] * (0.86 + center_boost * 0.24)
+            z = plinth_h + h * 0.5
+            yaw = math.radians(side * (2.1 - idx * 0.35))
 
             create_box(
-                name=f"SideFin_{'L' if side < 0 else 'R'}_{j:02d}",
-                size=(cfg["fin_thickness"], cfg["fin_depth"], cfg["fin_height"] * h_scale),
-                location=(x_fin, side * fin_y, fin_z * h_scale),
+                name=f"SideFin_{'L' if side < 0 else 'R'}_{idx:02d}",
+                size=(cfg["fin_thickness"], cfg["fin_depth"], h),
+                location=(x, side * side_y, z),
+                rotation=(0.0, 0.0, yaw),
                 collection=col,
                 material=mats["metal"],
             )
 
-    # Franja de vidrio longitudinal continua para integrar los fins
-    glass_len = total_x + spacing * 0.95
+    glass_len = total_x + cfg["portal_spacing"] * 1.05
     glass_z = plinth_h + cfg["glass_height"] * 0.5
-    glass_y = base_w * 0.5 - cfg["glass_inset_y"]
 
     create_box(
         name="GlassRibbon_Left",
         size=(glass_len, cfg["glass_thickness"], cfg["glass_height"]),
-        location=(0.0, -glass_y, glass_z),
+        location=(0.0, -side_y + 0.07, glass_z),
         collection=col,
         material=mats["glass"],
     )
-
     create_box(
         name="GlassRibbon_Right",
         size=(glass_len, cfg["glass_thickness"], cfg["glass_height"]),
-        location=(0.0, glass_y, glass_z),
+        location=(0.0, side_y - 0.07, glass_z),
         collection=col,
         material=mats["glass"],
     )
 
-    # ---------- 5) Espina central compositiva (reemplaza monolito) ----------
-    spine = create_box(
-        name="CentralSpine",
-        size=(total_x * 0.86, cfg["spine_width"], cfg["spine_height"]),
-        location=(0.0, 0.0, plinth_h + 0.36),
-        collection=col,
-        material=mats["metal"],
-    )
-    add_bevel_modifier(spine, amount=0.01, segments=1)
 
-    # Alineación limpia: aplicar rotación y normalizar escalas
+def build_central_void_and_path(cfg, col, mats, total_x):
+    """Núcleo arquitectónico: vacío legible + pasarela metálica y apoyos mínimos."""
+    plinth_h = cfg["platform_height"]
+    void_len = total_x * cfg["void_length_ratio"]
+
+    # Costillas longitudinales separadas para subrayar el vacío central
+    rail_offset = cfg["walkway_width"] * 0.5
+    rail_z = plinth_h + 0.38
+    for side in (-1.0, 1.0):
+        rail = create_box(
+            name=f"VoidRail_{'L' if side < 0 else 'R'}",
+            size=(void_len, cfg["spine_width"], cfg["spine_height"]),
+            location=(0.0, side * rail_offset, rail_z),
+            collection=col,
+            material=mats["metal"],
+        )
+        add_bevel_modifier(rail, amount=0.008, segments=1)
+
+    # Pasarela central ligera (foco interior y lectura de recorrido)
+    walkway = create_box(
+        name="CentralWalkway",
+        size=(void_len * 0.88, cfg["walkway_width"], cfg["walkway_thickness"]),
+        location=(0.0, 0.0, plinth_h + 0.33),
+        collection=col,
+        material=mats["concrete"],
+    )
+    add_bevel_modifier(walkway, amount=0.006, segments=1)
+
+    # Núcleo vertical sobrio como remate focal
+    core = create_box(
+        name="CoreMonolith",
+        size=(0.52, 1.18, 2.55),
+        location=(0.0, 0.0, plinth_h + 1.28),
+        rotation=(0.0, 0.0, math.radians(5.0)),
+        collection=col,
+        material=mats["concrete"],
+    )
+    add_bevel_modifier(core, amount=0.012, segments=1)
+
+
+def build_hero_pavilion(cfg, col, mats):
+    """Pipeline de construcción principal."""
+    platform = build_platform(cfg, col, mats)
+    total_x, _ = build_portals(cfg, col, mats)
+    build_roof(cfg, col, mats, total_x)
+    build_side_composition(cfg, col, mats, total_x)
+    build_central_void_and_path(cfg, col, mats, total_x)
+
     for obj in col.objects:
         obj.select_set(True)
     bpy.context.view_layer.objects.active = platform
@@ -400,47 +460,47 @@ def build_hero_pavilion(cfg, col, mats):
 # CÁMARA, LUZ Y FONDO
 # ==========================================================
 def setup_camera_and_light(cfg):
-    """Escena comercial: cámara oblicua + luz principal + relleno suave."""
+    """Escena comercial: cámara 3/4, key light definida y relleno controlado."""
     scene = bpy.context.scene
 
-    # Cámara hero (composición 3/4)
+    # Cámara hero comercial
     cam_data = bpy.data.cameras.new("HeroCamera")
     cam = bpy.data.objects.new("HeroCamera", cam_data)
     scene.collection.objects.link(cam)
 
-    cam.location = Vector((12.6, -11.4, 7.0))
-    target = Vector((0.0, 0.0, 2.45))
+    cam.location = Vector((13.9, -12.6, 7.6))
+    target = Vector((0.2, 0.0, 2.7))
     direction = target - cam.location
     cam.rotation_euler = direction.to_track_quat('-Z', 'Y').to_euler()
 
-    cam_data.lens = 50
+    cam_data.lens = 52
     cam_data.sensor_width = 36
     cam_data.clip_start = 0.1
-    cam_data.clip_end = 500
+    cam_data.clip_end = 600
     scene.camera = cam
 
-    # Luz principal
+    # Luz principal (sun)
     key_data = bpy.data.lights.new(name="KeySun", type='SUN')
     key = bpy.data.objects.new(name="KeySun", object_data=key_data)
     scene.collection.objects.link(key)
 
-    key.location = (10.0, -8.2, 14.5)
-    key.rotation_euler = (math.radians(52.0), math.radians(4.0), math.radians(29.0))
-    key_data.energy = 3.7
-    key_data.angle = math.radians(0.42)
+    key.location = (9.8, -8.8, 15.3)
+    key.rotation_euler = (math.radians(50.0), math.radians(2.0), math.radians(33.0))
+    key_data.energy = 3.9
+    key_data.angle = math.radians(0.38)
 
-    # Luz de relleno suave para separar silueta del fondo
+    # Relleno suave para recortar silueta sin lavar contraste
     fill_data = bpy.data.lights.new(name="FillArea", type='AREA')
     fill = bpy.data.objects.new(name="FillArea", object_data=fill_data)
     scene.collection.objects.link(fill)
 
-    fill.location = (-6.5, 8.0, 5.3)
-    fill.rotation_euler = (math.radians(76.0), 0.0, math.radians(-42.0))
-    fill_data.energy = 70
+    fill.location = (-7.4, 9.6, 5.8)
+    fill.rotation_euler = (math.radians(75.0), 0.0, math.radians(-45.0))
+    fill_data.energy = 62
     fill_data.color = (0.78, 0.82, 0.9)
-    fill_data.size = 6.2
+    fill_data.size = 6.4
 
-    # Plano de suelo neutro oscuro
+    # Suelo neutro oscuro
     bpy.ops.mesh.primitive_plane_add(location=(0.0, 0.0, 0.0), size=cfg["ground_size"])
     ground = bpy.context.active_object
     ground.name = "GroundPlane"
@@ -449,10 +509,9 @@ def setup_camera_and_light(cfg):
     ground_mat.use_nodes = True
     bsdf = ground_mat.node_tree.nodes.get("Principled BSDF")
     bsdf.inputs["Base Color"].default_value = (0.045, 0.05, 0.058, 1.0)
-    bsdf.inputs["Roughness"].default_value = 0.92
+    bsdf.inputs["Roughness"].default_value = 0.93
     assign_material(ground, ground_mat)
 
-    # Color management con fallback entre versiones
     set_color_management_look(
         scene,
         preferred_looks=[
@@ -469,7 +528,7 @@ def setup_camera_and_light(cfg):
 # EXPORTACIÓN GLB
 # ==========================================================
 def export_glb_if_needed(cfg):
-    """Exporta GLB con settings simples y compatibles."""
+    """Exporta GLB con settings compatibles para web."""
     if not cfg["do_export_glb"]:
         return
 
@@ -507,7 +566,7 @@ def main():
                         space.shading.type = 'MATERIAL'
 
     export_glb_if_needed(CONFIG)
-    print("[OK] Hero pavilion premium v2 generado.")
+    print("[OK] Hero pavilion premium v2 refactor generado.")
 
 
 if __name__ == "__main__":
