@@ -7,29 +7,31 @@ import { siteContent } from "@/content/siteContent";
 
 export function Hero() {
   return (
-    <section className="theme-hero section-hero section-spacing section-density-relaxed pb-12 sm:pb-14" id="inicio">
-      <div className="site-container grid items-center gap-10 md:gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16 xl:grid-cols-[0.9fr_1.1fr] xl:gap-20">
-        <div className="space-y-6 sm:space-y-7">
-          <div className="space-y-2">
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-accent-strong)]">
-              Ingeniería civil premium · decisiones con respaldo técnico
-            </p>
-            <div className="flex flex-wrap items-center gap-2.5 text-[0.58rem] font-medium uppercase tracking-[0.18em] text-[var(--color-text-muted)]">
-              <span>Hoja H-01</span>
-              <span className="h-3 w-px bg-[color-mix(in_srgb,var(--color-border)_74%,transparent)]" />
-              <span>Lectura técnica</span>
-              <span className="h-3 w-px bg-[color-mix(in_srgb,var(--color-border)_74%,transparent)]" />
-              <span>Datum ±0.00</span>
+    <section className="theme-hero section-hero section-spacing section-density-high pb-10 sm:pb-12" id="inicio">
+      <div className="site-container grid items-center gap-8 md:gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14 xl:grid-cols-[0.9fr_1.1fr] xl:gap-16">
+        <div className="space-y-5 sm:space-y-6">
+          <div className="block-reading reading-block-dense rounded-[var(--radius-md)]">
+            <div className="space-y-2">
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-accent-strong)]">
+                Ingeniería civil premium · decisiones con respaldo técnico
+              </p>
+              <div className="flex flex-wrap items-center gap-2.5 text-[0.58rem] font-medium uppercase tracking-[0.18em] text-[var(--color-text-muted)]">
+                <span>Hoja H-01</span>
+                <span className="h-3 w-px bg-[color-mix(in_srgb,var(--color-border)_74%,transparent)]" />
+                <span>Lectura técnica</span>
+                <span className="h-3 w-px bg-[color-mix(in_srgb,var(--color-border)_74%,transparent)]" />
+                <span>Datum ±0.00</span>
+              </div>
             </div>
           </div>
 
-          <div className="space-y-4">
-            <h1 className="max-w-2xl text-balance text-[2.15rem] font-semibold leading-[1.04] tracking-[-0.032em] text-[var(--color-text)] sm:text-[2.7rem] lg:text-[3.05rem] xl:text-[3.25rem]">
+          <div className="space-y-3">
+            <h1 className="max-w-2xl text-balance text-[1.98rem] font-semibold leading-[1.01] tracking-[-0.034em] text-[var(--color-text)] sm:text-[2.55rem] lg:text-[2.95rem] xl:text-[3.2rem]">
               Dirección técnica para ejecutar obra con menos incertidumbre y más control.
             </h1>
             <div className="flex max-w-xl items-start gap-3">
               <span className="mt-3 h-px w-14 bg-[color-mix(in_srgb,var(--color-accent)_58%,transparent)] sm:w-20" />
-              <p className="text-pretty text-[1.02rem] leading-relaxed text-[var(--color-text-muted)] sm:text-[1.08rem]">
+              <p className="text-pretty text-[0.97rem] leading-relaxed text-[var(--color-text-muted)] sm:text-[1.05rem]">
                 Ordenamos la complejidad en un plan accionable: diagnóstico, prioridades y seguimiento técnico para
                 proteger plazo, presupuesto y cumplimiento normativo.
               </p>
@@ -44,7 +46,7 @@ export function Hero() {
             </div>
           </div>
 
-          <div className="space-y-3">
+          <div className="block-reading reading-block-dense space-y-3 rounded-[var(--radius-md)]">
             <div className="flex flex-wrap gap-2.5 sm:gap-3">
               <Link className={buttonClassName("primary")} href={siteContent.contact.calendlyLink} rel="noreferrer" target="_blank">
                 {siteContent.cta.primary}
