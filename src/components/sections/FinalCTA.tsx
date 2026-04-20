@@ -6,13 +6,14 @@ import { siteContent } from "@/content/siteContent";
 
 export function FinalCTA() {
   return (
-    <section className="theme-section section-spacing section-spacing-compact" id="contacto">
+    <section className="theme-section section-close section-spacing section-spacing-compact section-density-relaxed section-divider" id="contacto">
       <div className="site-container">
-        <div className="panel panel-cta p-7 sm:p-10">
+        <div className="panel panel-cta panel-clean p-7 sm:p-10">
           <SectionHeading
             eyebrow="Próximo paso"
             title="Si estás por definir una decisión de obra, conversemos"
             description="Una llamada breve alcanza para clarificar alcance, riesgo y próximos pasos antes de comprometer recursos."
+            role="close"
           />
 
           <div className="mt-7 grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">

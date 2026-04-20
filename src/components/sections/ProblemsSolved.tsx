@@ -21,12 +21,13 @@ const problems = [
 
 export function ProblemsSolved() {
   return (
-    <section className="section-spacing section-divider">
+    <section className="section-core section-spacing section-density-compact section-divider-strong">
       <div className="site-container space-y-9">
         <SectionHeading
           eyebrow="Qué resolvemos"
           title="Problemas de obra que impactan directo en plazo, costo y tranquilidad"
           description="Si el cliente entiende el riesgo, puede comprar la solución correcta. Nosotros lo hacemos visible y accionable."
+          role="core"
         />
 
         <div className="grid gap-3.5 md:grid-cols-6 md:gap-4">

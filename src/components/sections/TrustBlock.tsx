@@ -16,12 +16,13 @@ const withoutSupport = [
 
 export function TrustBlock() {
   return (
-    <section className="theme-section-emphasis section-spacing section-divider">
+    <section className="theme-section-emphasis section-close section-spacing section-density-relaxed section-divider">
       <div className="site-container space-y-9">
         <SectionHeading
           eyebrow="Confianza basada en método"
           title="Respaldo técnico vs. improvisación: la diferencia se nota en cada decisión"
           description="Cuando hay orden técnico desde el inicio, el proyecto gana trazabilidad, previsibilidad y control operativo."
+          role="close"
         />
 
         <div className="grid gap-3.5 lg:grid-cols-5 lg:gap-4">
