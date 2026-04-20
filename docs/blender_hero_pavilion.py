@@ -114,6 +114,18 @@ def create_materials():
     """Materiales básicos compatibles con glTF (Principled BSDF)."""
     mats = {}
 
+    def set_bsdf_input(bsdf_node, socket_names, value):
+        """
+        Asigna valor al primer socket existente en una lista de nombres.
+        Sirve para compatibilidad entre versiones de Blender con nombres cambiantes.
+        """
+        for socket_name in socket_names:
+            socket = bsdf_node.inputs.get(socket_name)
+            if socket is not None:
+                socket.default_value = value
+                return True
+        return False
+
     # Hormigón premium (ligeramente frío)
     concrete = bpy.data.materials.new("M_Concrete")
     concrete.use_nodes = True
@@ -139,12 +151,13 @@ def create_materials():
     bsdf.inputs["Base Color"].default_value = (0.76, 0.86, 0.92, 1.0)
     bsdf.inputs["Roughness"].default_value = 0.06
     bsdf.inputs["Metallic"].default_value = 0.0
-    bsdf.inputs["Transmission Weight"].default_value = 0.9
+    set_bsdf_input(bsdf, ["Transmission Weight", "Transmission"], 0.9)
     bsdf.inputs["IOR"].default_value = 1.45
 
     # Ajustes de transparencia para viewport/Eevee y export
     glass.blend_method = 'BLEND'
-    glass.shadow_method = 'HASHED'
+    if hasattr(glass, "shadow_method"):
+        glass.shadow_method = 'HASHED'
     mats["glass"] = glass
 
     return mats
