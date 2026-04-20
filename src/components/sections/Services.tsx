@@ -24,12 +24,13 @@ const services = [
 
 export function Services() {
   return (
-    <section className="theme-section section-spacing">
+    <section className="theme-section section-core section-spacing section-density-compact section-divider">
       <div className="site-container space-y-9">
         <SectionHeading
           eyebrow="Servicios"
           title="Servicios claros para comprar con confianza"
           description="Sin paquetes confusos: cada servicio tiene alcance, criterio técnico y un resultado verificable."
+          role="core"
         />
         <div className="grid gap-3.5 md:grid-cols-3 md:gap-4">
           {services.map((service) => (
