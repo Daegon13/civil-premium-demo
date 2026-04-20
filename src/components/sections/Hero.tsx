@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { MetricPill } from "@/components/ui/MetricPill";
 import { buttonClassName } from "@/components/ui/Button";
-import { HeroStructureVisual } from "@/components/visual/HeroStructureVisual";
+import { Hero3DStage } from "@/components/visual/Hero3DStage";
 import { siteContent } from "@/content/siteContent";
 
 export function Hero() {
@@ -65,7 +65,7 @@ export function Hero() {
           </div>
         </div>
 
-        <HeroStructureVisual />
+        <Hero3DStage />
       </div>
     </section>
   );
