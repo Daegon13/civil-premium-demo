@@ -1,16 +1,32 @@
 @import "tailwindcss";
 
 :root {
-  --color-bg: #e6ebef;
-  --color-surface: #f4f7fa;
-  --color-surface-muted: #dde4eb;
-  --color-border: #a8b5c2;
-  --color-border-strong: #6e8194;
-  --color-text: #1e2a36;
-  --color-text-muted: #4f6072;
-  --color-accent: #2f648f;
-  --color-accent-strong: #1f4667;
-  --color-accent-contrast: #f3f8fc;
+  /* Fondo */
+  --color-bg: #e8edf2;
+
+  /* Superficie */
+  --color-surface: #f6f9fc;
+  --color-surface-muted: #e2e9f0;
+  --color-border: #95a7b8;
+  --color-border-strong: #647a8f;
+
+  /* Tipografía */
+  --color-text: #192634;
+  --color-text-muted: #3f5468;
+
+  /* Acento principal (branding sobrio) */
+  --color-accent: #245d8b;
+  --color-accent-strong: #183f61;
+  --color-accent-contrast: #f5f9fd;
+
+  /* Acento secundario (uso técnico restringido) */
+  --color-accent-secondary: #5b6d7f;
+  --color-accent-secondary-strong: #415262;
+
+  /* Señal */
+  --color-signal: #2e7765;
+  --color-signal-contrast: #eef8f4;
+  --color-signal-caution: #8a6a30;
 
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;

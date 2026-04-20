@@ -14,7 +14,7 @@ export function SectionHeading({ eyebrow, title, description, align = "left", re
       <div className={cn("flex items-center gap-3", align === "center" && "justify-center")}>
         <span className="hidden h-px w-14 bg-[color-mix(in_srgb,var(--color-accent)_56%,transparent)] sm:block" />
         {eyebrow ? (
-          <p className="text-[0.67rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-accent-strong)]">{eyebrow}</p>
+          <p className="text-[0.67rem] font-semibold uppercase tracking-[0.24em] text-[var(--color-accent-secondary-strong)]">{eyebrow}</p>
         ) : null}
         <span className="h-4 w-px bg-[color-mix(in_srgb,var(--color-border-strong)_62%,transparent)]" />
         <p className="text-[0.58rem] font-semibold uppercase tracking-[0.19em] text-[color-mix(in_srgb,var(--color-text-muted)_78%,transparent)]">
