@@ -119,6 +119,18 @@ body {
   padding-block: clamp(4.7rem, 7.8vw, 8.2rem);
 }
 
+.section-density-high {
+  padding-block: clamp(3.1rem, 4.6vw, 4.2rem);
+}
+
+.section-density-medium {
+  padding-block: clamp(3.8rem, 6vw, 5.4rem);
+}
+
+.section-density-low {
+  padding-block: clamp(6rem, 10vw, 9.5rem);
+}
+
 /* Reglas de uso para reforzar identidad de ingeniería estructural */
 .theme-hero {
   position: relative;
@@ -204,6 +216,25 @@ body {
     color-mix(in srgb, var(--color-surface-muted) 56%, white 44%),
     color-mix(in srgb, var(--color-surface) 86%, white 14%)
   );
+}
+
+.block-reading {
+  position: relative;
+  border: 1px solid color-mix(in srgb, var(--color-border) 80%, var(--color-accent) 20%);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-surface-front) 84%, white 16%),
+    color-mix(in srgb, var(--color-surface) 88%, white 12%)
+  );
+  box-shadow: 0 16px 28px -24px rgba(20, 38, 56, 0.36);
+}
+
+.reading-block-dense {
+  padding: clamp(1rem, 1.7vw, 1.35rem);
+}
+
+.reading-block-breathing {
+  padding: clamp(1.35rem, 2vw, 1.75rem);
 }
 
 .block-evidence {

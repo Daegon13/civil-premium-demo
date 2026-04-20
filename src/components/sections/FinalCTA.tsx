@@ -6,9 +6,9 @@ import { siteContent } from "@/content/siteContent";
 
 export function FinalCTA() {
   return (
-    <section className="theme-section section-close section-spacing section-spacing-compact section-density-relaxed section-divider" id="contacto">
+    <section className="theme-section section-close section-spacing section-density-low section-divider" id="contacto">
       <div className="site-container">
-        <div className="panel panel-cta panel-clean p-7 sm:p-10">
+        <div className="panel panel-cta panel-clean p-8 sm:p-12">
           <SectionHeading
             eyebrow="Próximo paso"
             title="Si estás por definir una decisión de obra, conversemos"
@@ -16,8 +16,8 @@ export function FinalCTA() {
             role="close"
           />
 
-          <div className="mt-7 grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
-            <div className="space-y-2.5 text-sm leading-relaxed text-[var(--color-text-muted)]">
+          <div className="mt-10 grid gap-9 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div className="space-y-3 text-[0.97rem] leading-relaxed text-[var(--color-text-muted)]">
               <p>1. Compartís contexto y objetivo del proyecto.</p>
               <p>2. Identificamos riesgos críticos y nivel de intervención.</p>
               <p>3. Definimos una ruta técnica concreta para avanzar.</p>
@@ -33,7 +33,7 @@ export function FinalCTA() {
             </div>
           </div>
 
-          <div className="mt-7 border-t border-[var(--color-border)] pt-5 text-sm text-[var(--color-text-muted)]">
+          <div className="mt-12 border-t border-[var(--color-border)] pt-6 text-sm text-[var(--color-text-muted)]">
             <p>
               Contacto directo: {" "}
               <a className="text-[var(--color-text)] underline-offset-4 hover:underline" href={`mailto:${siteContent.contact.email}`}>

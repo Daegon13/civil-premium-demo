@@ -42,9 +42,9 @@ export function SectionHeading({
 
       <h2
         className={cn(
-          "max-w-3xl text-balance text-[1.75rem] font-semibold leading-[1.14] tracking-[-0.02em] text-[var(--color-text)] sm:text-[2rem] lg:text-[2.2rem]",
-          isCore && "text-[1.6rem] sm:text-[1.82rem] lg:text-[2.05rem]",
-          isClose && "max-w-2xl text-[1.55rem] sm:text-[1.76rem] lg:text-[1.95rem]",
+          "max-w-3xl text-balance text-[1.9rem] font-semibold leading-[1.08] tracking-[-0.024em] text-[var(--color-text)] sm:text-[2.2rem] lg:text-[2.4rem]",
+          isCore && "text-[1.65rem] leading-[1.12] sm:text-[1.9rem] lg:text-[2.1rem]",
+          isClose && "max-w-2xl text-[1.35rem] leading-[1.22] sm:text-[1.55rem] lg:text-[1.72rem]",
         )}
       >
         {title}
@@ -69,9 +69,9 @@ export function SectionHeading({
       {description ? (
         <p
           className={cn(
-            "max-w-2xl text-pretty text-[0.95rem] leading-relaxed text-[var(--color-text-muted)] sm:text-base",
-            isCore && "text-[0.9rem] sm:text-[0.97rem]",
-            isClose && "max-w-xl text-[0.92rem] sm:text-[0.98rem]",
+            "max-w-2xl text-pretty text-[1rem] leading-relaxed text-[var(--color-text-muted)] sm:text-[1.06rem]",
+            isCore && "text-[0.92rem] sm:text-[0.98rem]",
+            isClose && "max-w-xl text-[0.98rem] leading-[1.8] sm:text-[1.04rem]",
           )}
         >
           {description}
