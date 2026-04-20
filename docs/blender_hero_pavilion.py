@@ -96,6 +96,36 @@ def assign_material(obj, mat):
     obj.data.materials.append(mat)
 
 
+def set_color_management_look(scene, preferred_looks):
+    """
+    Asigna el look de color management de forma robusta entre versiones.
+
+    Blender puede exponer distintos nombres de look (p. ej.:
+    "Medium High Contrast" vs "AgX - Medium High Contrast").
+    Esta función intenta varias opciones y, si ninguna existe, conserva el valor actual.
+    """
+    look_prop = scene.view_settings.bl_rna.properties.get("look")
+    if look_prop is None:
+        print("[WARN] No se encontró la propiedad scene.view_settings.look.")
+        return None
+
+    enum_items = look_prop.enum_items
+    available = {item.identifier for item in enum_items}
+
+    for look_name in preferred_looks:
+        if look_name in available:
+            scene.view_settings.look = look_name
+            print(f"[OK] Color management look configurado: {look_name}")
+            return look_name
+
+    print(
+        "[WARN] Ningún look preferido está disponible. "
+        f"Disponibles: {sorted(available)}. "
+        f"Se mantiene: {scene.view_settings.look}"
+    )
+    return None
+
+
 def create_box(name, size, location, collection, material=None, rotation=(0.0, 0.0, 0.0)):
     """Crea una caja simple (low poly) con tamaño exacto."""
     bpy.ops.mesh.primitive_cube_add(location=location, rotation=rotation)
@@ -338,7 +368,18 @@ def setup_camera_and_light(cfg):
     sun_data.angle = math.radians(0.5)
 
     # Ajustes de color management para look comercial neutro
-    scene.view_settings.look = 'Medium High Contrast'
+    # Ordenado por preferencia y compatibilidad entre Blender versiones.
+    set_color_management_look(
+        scene,
+        preferred_looks=[
+            "AgX - Medium High Contrast",
+            "Medium High Contrast",
+            "AgX - High Contrast",
+            "High Contrast",
+            "AgX - Base Contrast",
+            "None",
+        ],
+    )
 
 
 # ==========================================================
@@ -375,7 +416,7 @@ def main():
     setup_camera_and_light(CONFIG)
 
     # Opcional: mejorar vista en viewport para revisión rápida
-    if CONFIG["set_viewport_shading_to_material"]:
+    if CONFIG["set_viewport_shading_to_material"] and bpy.context.screen is not None:
         for area in bpy.context.screen.areas:
             if area.type == 'VIEW_3D':
                 for space in area.spaces:
