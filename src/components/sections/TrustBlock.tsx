@@ -26,7 +26,7 @@ export function TrustBlock() {
         />
 
         <div className="grid gap-3.5 lg:grid-cols-5 lg:gap-4">
-          <article className="block-evidence rounded-[var(--radius-lg)] p-6 sm:p-7 lg:col-span-3">
+          <article className="block-evidence card-motion card-motion-glow rounded-[var(--radius-lg)] p-6 sm:p-7 lg:col-span-3">
             <h3 className="text-sm font-semibold tracking-[0.1em] uppercase text-[var(--color-accent-strong)]">Con respaldo técnico</h3>
             <ul className="mt-4 space-y-3 text-sm text-[var(--color-text-muted)]">
               {withSupport.map((item) => (
@@ -35,7 +35,7 @@ export function TrustBlock() {
             </ul>
           </article>
 
-          <article className="block-evidence rounded-[var(--radius-lg)] p-6 sm:p-7 lg:col-span-2">
+          <article className="block-evidence card-motion card-motion-glow rounded-[var(--radius-lg)] p-6 sm:p-7 lg:col-span-2">
             <h3 className="text-sm font-semibold tracking-[0.1em] uppercase text-[var(--color-text)]">Cuando se improvisa</h3>
             <ul className="mt-4 space-y-3 text-sm text-[var(--color-text-muted)]">
               {withoutSupport.map((item) => (

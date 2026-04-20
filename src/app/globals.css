@@ -233,6 +233,60 @@ body {
   opacity: 0.3;
 }
 
+.card-motion {
+  position: relative;
+  isolation: isolate;
+  transition-property: transform, border-color, box-shadow, background-position;
+  transition-duration: 220ms;
+  transition-timing-function: ease;
+}
+
+.card-motion-shift:hover,
+.card-motion-shift:focus-visible {
+  transform: translateY(-3px);
+}
+
+.card-motion-border::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid color-mix(in srgb, var(--color-accent-strong) 42%, transparent);
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.card-motion-border:hover::after,
+.card-motion-border:focus-visible::after {
+  opacity: 1;
+}
+
+.card-motion-glow::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    color-mix(in srgb, var(--color-accent) 15%, transparent) 30%,
+    color-mix(in srgb, var(--color-accent-secondary) 10%, transparent) 55%,
+    transparent 100%
+  );
+  background-size: 190% 100%;
+  background-position: 120% 0;
+  opacity: 0;
+  transition: opacity 220ms ease, background-position 360ms ease;
+}
+
+.card-motion-glow:hover::before,
+.card-motion-glow:focus-visible::before {
+  opacity: 0.95;
+  background-position: 0 0;
+}
+
 @keyframes heroLineIn {
   from {
     opacity: 0.15;
@@ -296,6 +350,25 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .card-motion,
+  .card-motion-border::after,
+  .card-motion-glow::before {
+    transition: none;
+  }
+
+  .card-motion-shift:hover,
+  .card-motion-shift:focus-visible {
+    transform: none;
+  }
+
+  .card-motion-border:hover::after,
+  .card-motion-border:focus-visible::after,
+  .card-motion-glow:hover::before,
+  .card-motion-glow:focus-visible::before {
+    opacity: 0;
+    background-position: 120% 0;
+  }
+
   .hero-draw-line,
   .hero-layer-sweep,
   .fade-up {
