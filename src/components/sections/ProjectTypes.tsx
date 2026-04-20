@@ -41,7 +41,7 @@ export function ProjectTypes() {
           {projectTypes.map((item, index) => (
             <article
               key={item.title}
-              className={`block-evidence rounded-[var(--radius-md)] px-5 py-5 sm:px-6 sm:py-6 ${
+              className={`block-evidence card-motion card-motion-shift rounded-[var(--radius-md)] px-5 py-5 sm:px-6 sm:py-6 ${
                 index === 0 || index === 5 ? "lg:col-span-3" : "lg:col-span-2"
               }`}
             >

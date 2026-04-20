@@ -34,7 +34,7 @@ export function ProblemsSolved() {
           {problems.map((problem, index) => (
             <article
               key={problem.title}
-              className={`block-diagnostic fade-up rounded-[var(--radius-md)] px-5 py-5 sm:px-6 sm:py-6 ${
+              className={`block-diagnostic card-motion card-motion-border fade-up rounded-[var(--radius-md)] px-5 py-5 sm:px-6 sm:py-6 ${
                 index === 0 ? "md:col-span-4" : "md:col-span-3"
               }`}
               data-stagger={String(index + 1).padStart(2, "0")}
