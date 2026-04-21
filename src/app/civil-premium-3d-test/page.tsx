@@ -7,7 +7,7 @@ export default function CivilPremium3DTestPage() {
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500">Civil Premium • 3D Preview</p>
         <h1 className="text-3xl font-semibold tracking-tight text-neutral-900 md:text-4xl">Barcelona Pavilion glTF Test View</h1>
         <p className="text-sm text-neutral-600 md:text-base">
-          Vista de validación para encuadre, escala y lectura visual del hero 3D premium. Base lista para migrar después al hero final.
+          Ruta de prueba dedicada para validar carga, escala y encuadre de una escena 3D premium antes de llevarla al hero final.
         </p>
       </header>
 
