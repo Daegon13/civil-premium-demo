@@ -1,0 +1,560 @@
+"""
+Blender bpy script — Pabellón estructural de acceso (hero object premium).
+
+Concepto único:
+- Gran cubierta asimétrica en voladizo.
+- Lámina de agua lineal integrada al recorrido.
+- Núcleo escultórico desplazado como remate.
+
+Diseñado para exportar a GLB con geometría limpia low/mid poly.
+"""
+
+import bpy
+import math
+from mathutils import Vector
+
+
+# ==========================================================
+# PARÁMETROS EDITABLES
+# ==========================================================
+CONFIG = {
+    # Organización
+    "collection_name": "HeroAccessPavilion",
+    "set_viewport_shading_to_material": True,
+
+    # Exportación
+    "do_export_glb": False,
+    "export_path": "//hero_access_pavilion.glb",
+
+    # Plinto
+    "plinth_length": 16.0,
+    "plinth_width": 9.0,
+    "plinth_thickness": 0.35,
+    "plinth_bevel": 0.02,
+
+    # Plataforma interior elevada
+    "platform_length": 11.5,
+    "platform_width": 6.2,
+    "platform_elevation": 0.06,
+    "platform_thickness": 0.05,
+    "front_margin": 1.6,
+
+    # Pórticos
+    "portal_clear_width": 6.8,
+    "portal_height": 4.1,
+    "portal_col_section": (0.18, 0.18),
+    "portal_beam_section": (0.18, 0.22),
+    "main_portal_x": [2.2, 6.8, 11.6],
+    "secondary_portal_x": [4.9, 10.1],
+    "secondary_scale": 0.82,
+
+    # Cubierta principal (gesto dominante)
+    "roof_main_length": 10.5,
+    "roof_main_width": 5.8,
+    "roof_main_thickness": 0.12,
+    "roof_main_z": 4.15,
+    "roof_main_front_cantilever": 2.0,
+    "roof_main_side_cantilever_dominant": 1.4,
+    "roof_main_side_cantilever_minor": 0.5,
+
+    # Cubierta secundaria (contrapunto)
+    "roof_secondary_length": 5.4,
+    "roof_secondary_width": 3.1,
+    "roof_secondary_thickness": 0.10,
+    "roof_secondary_z_offset": 0.14,
+    "roof_secondary_back_offset": 1.85,
+
+    # Pantallas laterales (asimétricas)
+    "panel_thickness": 0.06,
+    "panel_side_a": [
+        (2.1, 0.9, 1.82),
+        (5.1, 1.25, 2.0),
+        (7.9, 1.75, 2.25),
+        (10.2, 2.05, 2.18),
+    ],
+    "panel_side_b": [
+        (5.7, 1.05, 1.94),
+        (9.0, 1.5, 2.12),
+        (11.2, 1.1, 2.22),
+    ],
+
+    # Monolito escultórico desplazado
+    "monolith_size": (0.9, 0.9, 2.3),
+    "monolith_base_size": (2.2, 0.55, 0.09),
+    "monolith_x_from_front": 10.9,
+    "monolith_side_offset_ratio": 0.18,
+
+    # Lámina de agua lineal
+    "water_length": 6.5,
+    "water_width": 1.1,
+    "water_recess": 0.05,
+    "water_x_from_front": 4.8,
+    "water_side": -1,
+
+    # Cámaras / luz / entorno
+    "create_front_camera": True,
+    "ground_size": 52.0,
+    "world_strength": 0.48,
+}
+
+
+# ==========================================================
+# UTILIDADES
+# ==========================================================
+def clean_scene():
+    """Limpia objetos y datos para una ejecución reproducible."""
+    bpy.ops.object.select_all(action='SELECT')
+    bpy.ops.object.delete(use_global=False)
+
+    for mesh in list(bpy.data.meshes):
+        bpy.data.meshes.remove(mesh)
+    for mat in list(bpy.data.materials):
+        bpy.data.materials.remove(mat)
+    for cam in list(bpy.data.cameras):
+        bpy.data.cameras.remove(cam)
+    for light in list(bpy.data.lights):
+        bpy.data.lights.remove(light)
+
+
+def ensure_collection(name):
+    scene = bpy.context.scene
+    collection = bpy.data.collections.new(name)
+    scene.collection.children.link(collection)
+    return collection
+
+
+def link_to_collection(obj, collection):
+    for col in list(obj.users_collection):
+        col.objects.unlink(obj)
+    collection.objects.link(obj)
+
+
+def assign_material(obj, material):
+    obj.data.materials.clear()
+    obj.data.materials.append(material)
+
+
+def create_box(name, size_xyz, location_xyz, collection, material=None, rotation_xyz=(0.0, 0.0, 0.0)):
+    bpy.ops.mesh.primitive_cube_add(location=location_xyz, rotation=rotation_xyz)
+    obj = bpy.context.active_object
+    obj.name = name
+    obj.scale = (size_xyz[0] * 0.5, size_xyz[1] * 0.5, size_xyz[2] * 0.5)
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+
+    link_to_collection(obj, collection)
+    if material is not None:
+        assign_material(obj, material)
+    return obj
+
+
+def add_bevel(obj, amount, segments=1):
+    bevel = obj.modifiers.new(name="Bevel", type='BEVEL')
+    bevel.width = amount
+    bevel.segments = segments
+    bevel.profile = 0.72
+    bevel.limit_method = 'ANGLE'
+    bevel.angle_limit = math.radians(35.0)
+
+
+def front_to_world_x(cfg, x_from_front):
+    """Convierte un valor longitudinal desde el frente de plataforma a X global."""
+    platform_start_x = -cfg["plinth_length"] * 0.5 + cfg["front_margin"]
+    return platform_start_x + x_from_front
+
+
+# ==========================================================
+# MATERIALES (4 familias glTF/GLB)
+# ==========================================================
+def create_materials(cfg):
+    mats = {}
+
+    # 1) Mineral claro: plinto y planos horizontales
+    mineral = bpy.data.materials.new("M_MineralLight")
+    mineral.use_nodes = True
+    bsdf = mineral.node_tree.nodes.get("Principled BSDF")
+    bsdf.inputs["Base Color"].default_value = (0.69, 0.70, 0.72, 1.0)
+    bsdf.inputs["Roughness"].default_value = 0.78
+    bsdf.inputs["Metallic"].default_value = 0.0
+    mats["mineral"] = mineral
+
+    # 2) Estructura metálica grafito
+    metal = bpy.data.materials.new("M_GraphiteMetal")
+    metal.use_nodes = True
+    bsdf = metal.node_tree.nodes.get("Principled BSDF")
+    bsdf.inputs["Base Color"].default_value = (0.06, 0.065, 0.075, 1.0)
+    bsdf.inputs["Roughness"].default_value = 0.28
+    bsdf.inputs["Metallic"].default_value = 0.96
+    mats["metal"] = metal
+
+    # 3) Panel mineral sobrio
+    panel = bpy.data.materials.new("M_PanelSoft")
+    panel.use_nodes = True
+    bsdf = panel.node_tree.nodes.get("Principled BSDF")
+    bsdf.inputs["Base Color"].default_value = (0.79, 0.81, 0.83, 1.0)
+    bsdf.inputs["Roughness"].default_value = 0.58
+    bsdf.inputs["Metallic"].default_value = 0.04
+    mats["panel"] = panel
+
+    # 4) Agua oscura reflectante
+    water = bpy.data.materials.new("M_WaterDark")
+    water.use_nodes = True
+    bsdf = water.node_tree.nodes.get("Principled BSDF")
+    bsdf.inputs["Base Color"].default_value = (0.025, 0.032, 0.038, 1.0)
+    bsdf.inputs["Roughness"].default_value = 0.03
+    bsdf.inputs["Metallic"].default_value = 0.0
+    if "Transmission Weight" in bsdf.inputs:
+        bsdf.inputs["Transmission Weight"].default_value = 0.05
+    elif "Transmission" in bsdf.inputs:
+        bsdf.inputs["Transmission"].default_value = 0.05
+    mats["water"] = water
+
+    # Mundo neutro oscuro
+    world = bpy.data.worlds.new("HeroWorld")
+    bpy.context.scene.world = world
+    world.use_nodes = True
+    background = world.node_tree.nodes.get("Background")
+    background.inputs[0].default_value = (0.025, 0.028, 0.032, 1.0)
+    background.inputs[1].default_value = cfg["world_strength"]
+
+    return mats
+
+
+# ==========================================================
+# BLOQUES DE COMPOSICIÓN ARQUITECTÓNICA
+# ==========================================================
+def build_plinth_and_platform(cfg, col, mats):
+    """1) Borde limpio del plinto + 2) acceso a plataforma interior."""
+    plinth = create_box(
+        "Plinth",
+        (cfg["plinth_length"], cfg["plinth_width"], cfg["plinth_thickness"]),
+        (0.0, 0.0, cfg["plinth_thickness"] * 0.5),
+        col,
+        mats["mineral"],
+    )
+    add_bevel(plinth, cfg["plinth_bevel"], segments=2)
+
+    platform_bottom_z = cfg["plinth_thickness"] + cfg["platform_elevation"]
+    platform_center_x = front_to_world_x(cfg, cfg["platform_length"] * 0.5)
+    platform = create_box(
+        "InnerPlatform",
+        (cfg["platform_length"], cfg["platform_width"], cfg["platform_thickness"]),
+        (platform_center_x, 0.0, platform_bottom_z + cfg["platform_thickness"] * 0.5),
+        col,
+        mats["mineral"],
+    )
+    add_bevel(platform, 0.008, segments=1)
+
+    return {
+        "platform_top_z": platform_bottom_z + cfg["platform_thickness"],
+    }
+
+
+def create_portal(col, mats, name_prefix, x, z_base, clear_width, height, col_section, beam_section, bevel_amount):
+    """Pórtico estructural U: dos pilares + viga."""
+    col_w, col_d = col_section
+    beam_h, beam_d = beam_section
+
+    half_clear = clear_width * 0.5
+    col_center_z = z_base + height * 0.5
+    beam_center_z = z_base + height - beam_h * 0.5
+
+    left = create_box(
+        f"{name_prefix}_ColL",
+        (col_w, col_d, height),
+        (x, -half_clear, col_center_z),
+        col,
+        mats["metal"],
+    )
+    right = create_box(
+        f"{name_prefix}_ColR",
+        (col_w, col_d, height),
+        (x, half_clear, col_center_z),
+        col,
+        mats["metal"],
+    )
+    beam = create_box(
+        f"{name_prefix}_Beam",
+        (beam_d, clear_width + col_w, beam_h),
+        (x, 0.0, beam_center_z),
+        col,
+        mats["metal"],
+        rotation_xyz=(0.0, 0.0, math.radians(90.0)),
+    )
+
+    add_bevel(left, bevel_amount)
+    add_bevel(right, bevel_amount)
+    add_bevel(beam, bevel_amount)
+
+
+def build_structural_sequence(cfg, col, mats, platform_top_z):
+    """3/4) Secuencia de compresión visual con 3 pórticos + 2 marcos secundarios."""
+    z_base = platform_top_z
+
+    for idx, x_from_front in enumerate(cfg["main_portal_x"], start=1):
+        x_world = front_to_world_x(cfg, x_from_front)
+        # Jerarquía: el último pórtico principal es sutilmente más alto
+        h = cfg["portal_height"] + (0.18 if idx == 3 else 0.0)
+        create_portal(
+            col,
+            mats,
+            f"MainPortal_{idx:02d}",
+            x_world,
+            z_base,
+            cfg["portal_clear_width"],
+            h,
+            cfg["portal_col_section"],
+            cfg["portal_beam_section"],
+            bevel_amount=0.008,
+        )
+
+    secondary_col = (
+        cfg["portal_col_section"][0] * cfg["secondary_scale"],
+        cfg["portal_col_section"][1] * cfg["secondary_scale"],
+    )
+    secondary_beam = (
+        cfg["portal_beam_section"][0] * cfg["secondary_scale"],
+        cfg["portal_beam_section"][1] * cfg["secondary_scale"],
+    )
+
+    for idx, x_from_front in enumerate(cfg["secondary_portal_x"], start=1):
+        x_world = front_to_world_x(cfg, x_from_front)
+        create_portal(
+            col,
+            mats,
+            f"SecondaryPortal_{idx:02d}",
+            x_world,
+            z_base,
+            cfg["portal_clear_width"] * 0.98,
+            cfg["portal_height"] * 0.94,
+            secondary_col,
+            secondary_beam,
+            bevel_amount=0.005,
+        )
+
+
+def build_roofs(cfg, col, mats, platform_top_z):
+    """5) Cubierta principal dominante + secundaria como contrapunto."""
+    first_portal_x = front_to_world_x(cfg, cfg["main_portal_x"][0])
+
+    # Centro longitudinal para cumplir el voladizo frontal solicitado
+    roof_main_center_x = first_portal_x + (cfg["roof_main_length"] * 0.5 - cfg["roof_main_front_cantilever"])
+
+    # Asimetría lateral controlada: lado Y negativo más abierto
+    roof_main_center_y = (
+        cfg["roof_main_side_cantilever_dominant"] - cfg["roof_main_side_cantilever_minor"]
+    ) * 0.5
+
+    main_roof = create_box(
+        "Roof_Main",
+        (cfg["roof_main_length"], cfg["roof_main_width"], cfg["roof_main_thickness"]),
+        (roof_main_center_x, roof_main_center_y, platform_top_z + cfg["roof_main_z"]),
+        col,
+        mats["mineral"],
+        rotation_xyz=(math.radians(-1.4), 0.0, math.radians(-1.1)),
+    )
+    add_bevel(main_roof, 0.01)
+
+    secondary_roof = create_box(
+        "Roof_Secondary",
+        (cfg["roof_secondary_length"], cfg["roof_secondary_width"], cfg["roof_secondary_thickness"]),
+        (
+            roof_main_center_x + cfg["roof_secondary_back_offset"],
+            roof_main_center_y - 1.1,
+            platform_top_z + cfg["roof_main_z"] + cfg["roof_secondary_z_offset"],
+        ),
+        col,
+        mats["mineral"],
+        rotation_xyz=(math.radians(0.8), 0.0, math.radians(1.9)),
+    )
+    add_bevel(secondary_roof, 0.008)
+
+
+def build_water_sheet(cfg, col, mats, platform_top_z):
+    """Lámina de agua lineal lateral, mínima y reflectante."""
+    side_offset = (cfg["platform_width"] * 0.5 - cfg["water_width"] * 0.5 - 0.45) * cfg["water_side"]
+    water_center_x = front_to_world_x(cfg, cfg["water_x_from_front"]) + cfg["water_length"] * 0.5
+
+    frame = create_box(
+        "WaterFrame",
+        (cfg["water_length"], cfg["water_width"], 0.01),
+        (water_center_x, side_offset, platform_top_z + 0.005),
+        col,
+        mats["mineral"],
+    )
+    add_bevel(frame, 0.003)
+
+    create_box(
+        "WaterSheet",
+        (cfg["water_length"] * 0.985, cfg["water_width"] * 0.93, 0.003),
+        (water_center_x, side_offset, platform_top_z - cfg["water_recess"]),
+        col,
+        mats["water"],
+    )
+
+
+def build_side_screens(cfg, col, mats, platform_top_z):
+    """Pantallas arquitectónicas asimétricas: lado A con 4, lado B con 3."""
+    y_side_a = -(cfg["platform_width"] * 0.5 - 0.20)
+    y_side_b = +(cfg["platform_width"] * 0.5 - 0.25)
+
+    for idx, (x_from_front, width, height) in enumerate(cfg["panel_side_a"], start=1):
+        create_box(
+            f"Screen_A_{idx:02d}",
+            (width, cfg["panel_thickness"], height),
+            (front_to_world_x(cfg, x_from_front), y_side_a, platform_top_z + height * 0.5),
+            col,
+            mats["panel"],
+            rotation_xyz=(0.0, 0.0, math.radians(-0.7 + idx * 0.22)),
+        )
+
+    for idx, (x_from_front, width, height) in enumerate(cfg["panel_side_b"], start=1):
+        create_box(
+            f"Screen_B_{idx:02d}",
+            (width, cfg["panel_thickness"], height),
+            (front_to_world_x(cfg, x_from_front), y_side_b, platform_top_z + height * 0.5),
+            col,
+            mats["panel"],
+            rotation_xyz=(0.0, 0.0, math.radians(0.35 - idx * 0.15)),
+        )
+
+
+def build_sculptural_monolith(cfg, col, mats, platform_top_z):
+    """6) Monolito desplazado como remate compositivo."""
+    side_offset = cfg["platform_width"] * cfg["monolith_side_offset_ratio"]
+    monolith_x = front_to_world_x(cfg, cfg["monolith_x_from_front"])
+
+    base = create_box(
+        "Monolith_Base",
+        cfg["monolith_base_size"],
+        (
+            monolith_x,
+            side_offset,
+            platform_top_z + cfg["monolith_base_size"][2] * 0.5,
+        ),
+        col,
+        mats["mineral"],
+    )
+    add_bevel(base, 0.006)
+
+    monolith = create_box(
+        "Monolith",
+        cfg["monolith_size"],
+        (
+            monolith_x + 0.15,
+            side_offset + 0.02,
+            platform_top_z + cfg["monolith_base_size"][2] + cfg["monolith_size"][2] * 0.5,
+        ),
+        col,
+        mats["metal"],
+        rotation_xyz=(0.0, 0.0, math.radians(1.7)),
+    )
+    add_bevel(monolith, 0.012, segments=2)
+
+
+def build_ground(cfg, mats):
+    bpy.ops.mesh.primitive_plane_add(location=(0.0, 0.0, 0.0), size=cfg["ground_size"])
+    ground = bpy.context.active_object
+    ground.name = "Ground"
+    assign_material(ground, mats["mineral"])
+
+
+# ==========================================================
+# CÁMARAS Y LUZ
+# ==========================================================
+def point_camera(camera_obj, target):
+    direction = target - camera_obj.location
+    camera_obj.rotation_euler = direction.to_track_quat('-Z', 'Y').to_euler()
+
+
+def setup_cameras_and_light(cfg):
+    scene = bpy.context.scene
+    target = Vector((1.8, -0.1, 2.25))
+
+    # Cámara hero 3/4 comercial
+    hero_data = bpy.data.cameras.new("HeroCamera")
+    hero_cam = bpy.data.objects.new("HeroCamera", hero_data)
+    scene.collection.objects.link(hero_cam)
+    hero_cam.location = Vector((14.8, -10.6, 6.9))
+    point_camera(hero_cam, target)
+    hero_data.lens = 54
+    hero_data.sensor_width = 36
+    scene.camera = hero_cam
+
+    # Cámara frontal opcional
+    if cfg["create_front_camera"]:
+        front_data = bpy.data.cameras.new("FrontCamera")
+        front_cam = bpy.data.objects.new("FrontCamera", front_data)
+        scene.collection.objects.link(front_cam)
+        front_cam.location = Vector((-12.8, 0.0, 3.55))
+        point_camera(front_cam, Vector((1.1, 0.0, 2.4)))
+        front_data.lens = 66
+
+    # Luz principal
+    key_data = bpy.data.lights.new(name="KeySun", type='SUN')
+    key = bpy.data.objects.new(name="KeySun", object_data=key_data)
+    scene.collection.objects.link(key)
+    key.location = (11.0, -8.0, 15.0)
+    key.rotation_euler = (math.radians(56.0), math.radians(-2.0), math.radians(28.0))
+    key_data.energy = 4.4
+    key_data.angle = math.radians(0.42)
+
+
+def set_viewport_material_mode_if_possible(enabled=True):
+    if not enabled or bpy.context.screen is None:
+        return
+    for area in bpy.context.screen.areas:
+        if area.type == 'VIEW_3D':
+            for space in area.spaces:
+                if space.type == 'VIEW_3D':
+                    space.shading.type = 'MATERIAL'
+
+
+# ==========================================================
+# EXPORTACIÓN
+# ==========================================================
+def export_glb_if_needed(cfg):
+    if not cfg["do_export_glb"]:
+        return
+
+    bpy.ops.export_scene.gltf(
+        filepath=cfg["export_path"],
+        export_format='GLB',
+        export_yup=True,
+        export_apply=True,
+        export_texcoords=True,
+        export_normals=True,
+        export_materials='EXPORT',
+        export_colors=False,
+        use_selection=False,
+    )
+    print(f"[OK] Exportado GLB: {cfg['export_path']}")
+
+
+# ==========================================================
+# MAIN
+# ==========================================================
+def main():
+    clean_scene()
+
+    work_col = ensure_collection(CONFIG["collection_name"])
+    mats = create_materials(CONFIG)
+
+    base = build_plinth_and_platform(CONFIG, work_col, mats)
+    platform_top_z = base["platform_top_z"]
+
+    build_structural_sequence(CONFIG, work_col, mats, platform_top_z)
+    build_roofs(CONFIG, work_col, mats, platform_top_z)
+    build_water_sheet(CONFIG, work_col, mats, platform_top_z)
+    build_side_screens(CONFIG, work_col, mats, platform_top_z)
+    build_sculptural_monolith(CONFIG, work_col, mats, platform_top_z)
+
+    build_ground(CONFIG, mats)
+    setup_cameras_and_light(CONFIG)
+    set_viewport_material_mode_if_possible(CONFIG["set_viewport_shading_to_material"])
+
+    export_glb_if_needed(CONFIG)
+    print("[OK] Hero pavilion premium generado.")
+
+
+if __name__ == "__main__":
+    main()
