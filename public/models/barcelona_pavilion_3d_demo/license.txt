@@ -1,0 +1,11 @@
+Model Information:
+* title:	Barcelona Pavilion (3D Demo)
+* source:	https://sketchfab.com/3d-models/barcelona-pavilion-3d-demo-8c84589050f94176b03140693388cd8e
+* author:	Bulin_J (https://sketchfab.com/Bulin_Jampajan)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Barcelona Pavilion (3D Demo)" (https://sketchfab.com/3d-models/barcelona-pavilion-3d-demo-8c84589050f94176b03140693388cd8e) by Bulin_J (https://sketchfab.com/Bulin_Jampajan) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
