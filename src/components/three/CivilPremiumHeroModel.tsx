@@ -4,6 +4,7 @@ import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Box3, Group, MathUtils, Object3D, Vector3 } from "three";
+import { getAutoCameraFit } from "./lib/cameraFit";
 
 const MODEL_PATH = "/models/barcelona_pavilion_3d_demo/scene.gltf";
 const DEBUG_CONTROLS = false;
@@ -13,8 +14,9 @@ type Breakpoint = "desktop" | "tablet" | "mobile";
 
 const ART_DIRECTION = {
   desktop: {
-    cameraPosition: [8.4, 3.8, 5.6] as const,
-    cameraTarget: [1.4, 0.9, -0.1] as const,
+    cameraOffset: [0.28, 0.1, -0.18] as const,
+    targetOffset: [0, 0.1, 0.14] as const,
+    fitPadding: 1.06,
     modelScale: 1.85,
     modelPosition: [1.4, -0.52, -0.35] as const,
     modelRotationY: -0.28,
@@ -26,8 +28,9 @@ const ART_DIRECTION = {
     },
   },
   tablet: {
-    cameraPosition: [8.2, 4.0, 5.75] as const,
-    cameraTarget: [1.35, 0.92, -0.1] as const,
+    cameraOffset: [0.2, 0.12, -0.2] as const,
+    targetOffset: [0, 0.1, 0.12] as const,
+    fitPadding: 1.09,
     modelScale: 1.76,
     modelPosition: [1.28, -0.52, -0.33] as const,
     modelRotationY: -0.28,
@@ -39,8 +42,9 @@ const ART_DIRECTION = {
     },
   },
   mobile: {
-    cameraPosition: [8.15, 4.05, 5.95] as const,
-    cameraTarget: [1.28, 0.95, -0.06] as const,
+    cameraOffset: [0.14, 0.14, -0.16] as const,
+    targetOffset: [0, 0.09, 0.1] as const,
+    fitPadding: 1.12,
     modelScale: 1.62,
     modelPosition: [1.12, -0.5, -0.25] as const,
     modelRotationY: -0.24,
@@ -53,7 +57,18 @@ const ART_DIRECTION = {
   },
 } as const;
 
-function HeroSceneModel({ breakpoint }: { breakpoint: Breakpoint }) {
+type BoundsSnapshot = {
+  center: [number, number, number];
+  size: [number, number, number];
+};
+
+function HeroSceneModel({
+  breakpoint,
+  onBoundsChange,
+}: {
+  breakpoint: Breakpoint;
+  onBoundsChange: (bounds: BoundsSnapshot) => void;
+}) {
   const { scene } = useGLTF(MODEL_PATH);
   const sceneClone = useMemo<Object3D>(() => scene.clone(), [scene]);
   const modelRootRef = useRef<Group>(null);
@@ -79,7 +94,13 @@ function HeroSceneModel({ breakpoint }: { breakpoint: Breakpoint }) {
       -center.z * normalizedScale * artScale + offsetZ,
     );
     modelRootRef.current.rotation.set(0, artDirection.modelRotationY, 0);
-  }, [breakpoint, sceneClone]);
+
+    const scaledSize = size.multiplyScalar(normalizedScale * artScale);
+    onBoundsChange({
+      center: [offsetX, offsetY + scaledSize.y / 2, offsetZ],
+      size: [scaledSize.x, scaledSize.y, scaledSize.z],
+    });
+  }, [breakpoint, onBoundsChange, sceneClone]);
 
   return (
     <group ref={modelRootRef}>
@@ -88,19 +109,36 @@ function HeroSceneModel({ breakpoint }: { breakpoint: Breakpoint }) {
   );
 }
 
-function CameraRig({ pointer, breakpoint }: { pointer: { x: number; y: number }; breakpoint: Breakpoint }) {
+function CameraRig({
+  pointer,
+  breakpoint,
+  bounds,
+}: {
+  pointer: { x: number; y: number };
+  breakpoint: Breakpoint;
+  bounds: BoundsSnapshot;
+}) {
   const smoothPointer = useRef({ x: 0, y: 0 });
   const smoothTargetOffset = useRef({ x: 0, y: 0 });
-  const basePosition = useMemo(
-    () => new Vector3(...ART_DIRECTION[breakpoint].cameraPosition),
-    [breakpoint],
-  );
-  const baseTarget = useMemo(() => new Vector3(...ART_DIRECTION[breakpoint].cameraTarget), [breakpoint]);
-  const parallax = ART_DIRECTION[breakpoint].parallax;
+  const baseCameraPosition = useRef(new Vector3(0, 0, 0));
+  const baseTarget = useRef(new Vector3(0, 0, 0));
 
   useFrame((state, delta) => {
     const { clock, camera } = state;
     const loop = (clock.getElapsedTime() / IDLE_SECONDS) * Math.PI * 2;
+    const artDirection = ART_DIRECTION[breakpoint];
+    const fit = getAutoCameraFit({
+      boundsSize: new Vector3(...bounds.size),
+      boundsCenter: new Vector3(...bounds.center),
+      fov: camera.fov,
+      aspect: state.size.width / Math.max(state.size.height, 1),
+      fitPadding: artDirection.fitPadding,
+    });
+    const cameraOffset = new Vector3(...artDirection.cameraOffset);
+    const targetOffset = new Vector3(...artDirection.targetOffset);
+
+    baseCameraPosition.current.copy(fit.autoCameraPosition).add(cameraOffset);
+    baseTarget.current.copy(fit.autoTarget).add(targetOffset);
 
     smoothPointer.current.x = MathUtils.damp(smoothPointer.current.x, pointer.x, 3.2, delta);
     smoothPointer.current.y = MathUtils.damp(smoothPointer.current.y, pointer.y, 3.2, delta);
@@ -113,9 +151,9 @@ function CameraRig({ pointer, breakpoint }: { pointer: { x: number; y: number };
     const targetIdleY = Math.cos(loop * 0.59) * 0.14;
     const targetIdleZ = Math.sin(loop * 0.73) * 0.22;
 
-    const nextX = basePosition.x + idleX + smoothPointer.current.x * parallax.cameraX;
-    const nextY = basePosition.y + idleY + smoothPointer.current.y * parallax.cameraY;
-    const nextZ = basePosition.z + idleZ;
+    const nextX = baseCameraPosition.current.x + idleX + smoothPointer.current.x * artDirection.parallax.cameraX;
+    const nextY = baseCameraPosition.current.y + idleY + smoothPointer.current.y * artDirection.parallax.cameraY;
+    const nextZ = baseCameraPosition.current.z + idleZ;
 
     camera.position.x = MathUtils.damp(camera.position.x, nextX, 3.4, delta);
     camera.position.y = MathUtils.damp(camera.position.y, nextY, 3.4, delta);
@@ -123,21 +161,21 @@ function CameraRig({ pointer, breakpoint }: { pointer: { x: number; y: number };
 
     smoothTargetOffset.current.x = MathUtils.damp(
       smoothTargetOffset.current.x,
-      smoothPointer.current.x * parallax.targetX,
+      smoothPointer.current.x * artDirection.parallax.targetX,
       4.4,
       delta,
     );
     smoothTargetOffset.current.y = MathUtils.damp(
       smoothTargetOffset.current.y,
-      smoothPointer.current.y * parallax.targetY,
+      smoothPointer.current.y * artDirection.parallax.targetY,
       4.4,
       delta,
     );
 
     camera.lookAt(
-      baseTarget.x + targetIdleX + smoothTargetOffset.current.x,
-      baseTarget.y + targetIdleY + smoothTargetOffset.current.y,
-      baseTarget.z + targetIdleZ,
+      baseTarget.current.x + targetIdleX + smoothTargetOffset.current.x,
+      baseTarget.current.y + targetIdleY + smoothTargetOffset.current.y,
+      baseTarget.current.z + targetIdleZ,
     );
   });
 
@@ -158,6 +196,10 @@ useGLTF.preload(MODEL_PATH);
 export function CivilPremiumHeroModel() {
   const [pointer, setPointer] = useState({ x: 0, y: 0 });
   const [breakpoint, setBreakpoint] = useState<Breakpoint>("desktop");
+  const [bounds, setBounds] = useState<BoundsSnapshot>({
+    center: [0, 0.8, 0],
+    size: [8, 4, 6],
+  });
 
   useEffect(() => {
     const mobileQuery = window.matchMedia("(max-width: 767px)");
@@ -186,8 +228,8 @@ export function CivilPremiumHeroModel() {
     };
   }, []);
 
-  const baseCamera = ART_DIRECTION[breakpoint].cameraPosition;
-  const baseTarget = ART_DIRECTION[breakpoint].cameraTarget;
+  const baseCamera = [6.8, 3.5, 5.2] as const;
+  const baseTarget = [1.3, 0.9, -0.1] as const;
 
   return (
     <div
@@ -213,7 +255,7 @@ export function CivilPremiumHeroModel() {
         <directionalLight position={[-6, 4, 8]} intensity={0.45} color="#bdd2e7" />
 
         <Suspense fallback={<LoadingFallback />}>
-          <HeroSceneModel breakpoint={breakpoint} />
+          <HeroSceneModel breakpoint={breakpoint} onBoundsChange={setBounds} />
         </Suspense>
 
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.15, 0]} scale={[40, 40, 1]}>
@@ -232,7 +274,7 @@ export function CivilPremiumHeroModel() {
             target={baseTarget}
           />
         ) : (
-          <CameraRig pointer={pointer} breakpoint={breakpoint} />
+          <CameraRig pointer={pointer} breakpoint={breakpoint} bounds={bounds} />
         )}
       </Canvas>
 
