@@ -3,12 +3,23 @@
 import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
-import { Box3, Group, MathUtils, Object3D, Sphere, Vector3 } from "three";
+import { Box3, Group, MathUtils, Object3D, PerspectiveCamera, Sphere, Vector3 } from "three";
 import { getAutoCameraFit } from "./lib/cameraFit";
 
 const MODEL_PATH = "/models/barcelona_pavilion_3d_demo/scene.gltf";
 const DEBUG_CONTROLS = false;
+// Diagnóstico temporal: cámara fija para verificar clipping/cortes.
+// Si con este modo desaparece el corte, la causa está en offsets/animación del rig.
+const FORCE_FIXED_CAMERA_FOR_DEBUG = true;
 const IDLE_SECONDS = 11;
+
+const FIXED_CAMERA_DEBUG = {
+  position: [9.2, 4.4, 7.1] as const,
+  target: [1.3, 0.9, -0.1] as const,
+  near: 0.25,
+  fov: 30,
+  far: 140,
+};
 
 type Breakpoint = "desktop" | "tablet" | "mobile";
 
@@ -198,15 +209,19 @@ function CameraRig({
   pointer,
   breakpoint,
   bounds,
+  fixedMode,
 }: {
   pointer: { x: number; y: number };
   breakpoint: Breakpoint;
   bounds: BoundsSnapshot;
+  fixedMode?: boolean;
 }) {
   const smoothPointer = useRef({ x: 0, y: 0 });
   const smoothTargetOffset = useRef({ x: 0, y: 0 });
   const baseCameraPosition = useRef(new Vector3(0, 0, 0));
   const baseTarget = useRef(new Vector3(0, 0, 0));
+  const computedCamera = useRef(new Vector3(0, 0, 0));
+  const computedTarget = useRef(new Vector3(0, 0, 0));
   const clampAround = (value: number, base: number, maxDelta: number) =>
     MathUtils.clamp(value, base - maxDelta, base + maxDelta);
 
@@ -217,7 +232,7 @@ function CameraRig({
     const fit = getAutoCameraFit({
       boundsSize: new Vector3(...bounds.size),
       boundsCenter: new Vector3(...bounds.center),
-      fov: camera.fov,
+      fov: (camera as PerspectiveCamera).fov ?? FIXED_CAMERA_DEBUG.fov,
       aspect: state.size.width / Math.max(state.size.height, 1),
       fitPadding: artDirection.modelFit.fitPadding,
     });
@@ -225,8 +240,13 @@ function CameraRig({
     const targetOffset = new Vector3(...artDirection.targetOffset);
     const { microDrift, parallax, smoothing, clamps } = artDirection.cameraRig;
 
-    baseCameraPosition.current.copy(fit.autoCameraPosition).add(cameraOffset);
-    baseTarget.current.copy(fit.autoTarget).add(targetOffset);
+    if (fixedMode) {
+      baseCameraPosition.current.set(...FIXED_CAMERA_DEBUG.position);
+      baseTarget.current.set(...FIXED_CAMERA_DEBUG.target);
+    } else {
+      baseCameraPosition.current.copy(fit.autoCameraPosition).add(cameraOffset);
+      baseTarget.current.copy(fit.autoTarget).add(targetOffset);
+    }
 
     smoothPointer.current.x = MathUtils.damp(smoothPointer.current.x, pointer.x, smoothing.pointer, delta);
     smoothPointer.current.y = MathUtils.damp(smoothPointer.current.y, pointer.y, smoothing.pointer, delta);
@@ -248,13 +268,15 @@ function CameraRig({
     const parallaxCameraX = smoothPointer.current.x * parallax.cameraX;
     const parallaxCameraY = smoothPointer.current.y * parallax.cameraY;
 
-    const nextX = clampAround(baseShotCameraX + microDriftCameraX + parallaxCameraX, baseShotCameraX, clamps.cameraX);
-    const nextY = clampAround(baseShotCameraY + microDriftCameraY + parallaxCameraY, baseShotCameraY, clamps.cameraY);
-    const nextZ = baseShotCameraZ + microDriftCameraZ;
+    const nextX = fixedMode
+      ? baseShotCameraX
+      : clampAround(baseShotCameraX + microDriftCameraX + parallaxCameraX, baseShotCameraX, clamps.cameraX);
+    const nextY = fixedMode
+      ? baseShotCameraY
+      : clampAround(baseShotCameraY + microDriftCameraY + parallaxCameraY, baseShotCameraY, clamps.cameraY);
+    const nextZ = fixedMode ? baseShotCameraZ : baseShotCameraZ + microDriftCameraZ;
 
-    camera.position.x = MathUtils.damp(camera.position.x, nextX, smoothing.cameraPosition, delta);
-    camera.position.y = MathUtils.damp(camera.position.y, nextY, smoothing.cameraPosition, delta);
-    camera.position.z = MathUtils.damp(camera.position.z, nextZ, smoothing.cameraPosition, delta);
+    computedCamera.current.set(nextX, nextY, nextZ);
 
     smoothTargetOffset.current.x = MathUtils.damp(
       smoothTargetOffset.current.x,
@@ -272,14 +294,41 @@ function CameraRig({
     const baseShotTargetX = baseTarget.current.x;
     const baseShotTargetY = baseTarget.current.y;
     const baseShotTargetZ = baseTarget.current.z;
-    const parallaxTargetX = smoothTargetOffset.current.x;
-    const parallaxTargetY = smoothTargetOffset.current.y;
+    const parallaxTargetX = fixedMode ? 0 : smoothTargetOffset.current.x;
+    const parallaxTargetY = fixedMode ? 0 : smoothTargetOffset.current.y;
 
-    camera.lookAt(
-      clampAround(baseShotTargetX + targetIdleX + parallaxTargetX, baseShotTargetX, clamps.targetX),
-      clampAround(baseShotTargetY + targetIdleY + parallaxTargetY, baseShotTargetY, clamps.targetY),
-      baseShotTargetZ + targetIdleZ,
-    );
+    const targetX = fixedMode
+      ? baseShotTargetX
+      : clampAround(baseShotTargetX + targetIdleX + parallaxTargetX, baseShotTargetX, clamps.targetX);
+    const targetY = fixedMode
+      ? baseShotTargetY
+      : clampAround(baseShotTargetY + targetIdleY + parallaxTargetY, baseShotTargetY, clamps.targetY);
+    const targetZ = fixedMode ? baseShotTargetZ : baseShotTargetZ + targetIdleZ;
+
+    computedTarget.current.set(targetX, targetY, targetZ);
+
+    // Guard rail de runtime: evita que la cámara entre en el volumen aproximado del modelo.
+    const modelRadius = Math.max(new Vector3(...bounds.size).length() * 0.5, 0.001);
+    const margin = Math.max(modelRadius * 0.08, camera.near * 2.25);
+    const minDistance = modelRadius + margin;
+
+    const cameraToTarget = computedCamera.current.clone().sub(computedTarget.current);
+    const currentDistance = cameraToTarget.length();
+
+    if (currentDistance < minDistance) {
+      cameraToTarget.normalize().multiplyScalar(minDistance || 0.001);
+      computedCamera.current.copy(computedTarget.current).add(cameraToTarget);
+    }
+
+    if (fixedMode) {
+      camera.position.copy(computedCamera.current);
+    } else {
+      camera.position.x = MathUtils.damp(camera.position.x, computedCamera.current.x, smoothing.cameraPosition, delta);
+      camera.position.y = MathUtils.damp(camera.position.y, computedCamera.current.y, smoothing.cameraPosition, delta);
+      camera.position.z = MathUtils.damp(camera.position.z, computedCamera.current.z, smoothing.cameraPosition, delta);
+    }
+
+    camera.lookAt(computedTarget.current);
   });
 
   return null;
@@ -331,7 +380,7 @@ export function CivilPremiumHeroModel() {
     };
   }, []);
 
-  const baseCamera = [6.8, 3.5, 5.2] as const;
+  const baseCamera = FORCE_FIXED_CAMERA_FOR_DEBUG ? FIXED_CAMERA_DEBUG.position : ([6.8, 3.5, 5.2] as const);
   const baseTarget = [1.3, 0.9, -0.1] as const;
 
   return (
@@ -348,7 +397,12 @@ export function CivilPremiumHeroModel() {
       <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(5,7,11,0.8)_0%,rgba(8,13,20,0.28)_42%,rgba(6,9,14,0.9)_100%)]" />
 
       <Canvas
-        camera={{ position: baseCamera, fov: 30, near: 0.1, far: 100 }}
+        camera={{
+          position: baseCamera,
+          fov: FORCE_FIXED_CAMERA_FOR_DEBUG ? FIXED_CAMERA_DEBUG.fov : 30,
+          near: FORCE_FIXED_CAMERA_FOR_DEBUG ? FIXED_CAMERA_DEBUG.near : 0.25,
+          far: FORCE_FIXED_CAMERA_FOR_DEBUG ? FIXED_CAMERA_DEBUG.far : 120,
+        }}
         dpr={breakpoint === "mobile" ? [1, 1.25] : [1, 1.6]}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
       >
@@ -377,7 +431,12 @@ export function CivilPremiumHeroModel() {
             target={baseTarget}
           />
         ) : (
-          <CameraRig pointer={pointer} breakpoint={breakpoint} bounds={bounds} />
+          <CameraRig
+            pointer={pointer}
+            breakpoint={breakpoint}
+            bounds={bounds}
+            fixedMode={FORCE_FIXED_CAMERA_FOR_DEBUG}
+          />
         )}
       </Canvas>
 
