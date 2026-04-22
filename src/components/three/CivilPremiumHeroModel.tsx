@@ -26,11 +26,30 @@ const ART_DIRECTION = {
       targetRadius: 4.7,
     },
     modelRotationY: -0.28,
-    parallax: {
-      cameraX: 0.45,
-      cameraY: 0.22,
-      targetX: 0.18,
-      targetY: 0.1,
+    cameraRig: {
+      microDrift: {
+        cameraAmplitude: { x: 0.16, y: 0.06, z: 0.12 },
+        cameraFrequency: { x: 0.44, y: 0.3, z: 0.36 },
+        targetAmplitude: { x: 0.08, y: 0.03, z: 0.05 },
+        targetFrequency: { x: 0.32, y: 0.26, z: 0.28 },
+      },
+      parallax: {
+        cameraX: 0.18,
+        cameraY: 0.1,
+        targetX: 0.08,
+        targetY: 0.05,
+      },
+      smoothing: {
+        pointer: 2.2,
+        cameraPosition: 2.4,
+        targetOffset: 2.8,
+      },
+      clamps: {
+        cameraX: 0.26,
+        cameraY: 0.14,
+        targetX: 0.15,
+        targetY: 0.09,
+      },
     },
   },
   tablet: {
@@ -46,11 +65,30 @@ const ART_DIRECTION = {
       targetRadius: 4.5,
     },
     modelRotationY: -0.28,
-    parallax: {
-      cameraX: 0.36,
-      cameraY: 0.18,
-      targetX: 0.15,
-      targetY: 0.09,
+    cameraRig: {
+      microDrift: {
+        cameraAmplitude: { x: 0.14, y: 0.05, z: 0.1 },
+        cameraFrequency: { x: 0.4, y: 0.28, z: 0.34 },
+        targetAmplitude: { x: 0.07, y: 0.028, z: 0.045 },
+        targetFrequency: { x: 0.3, y: 0.24, z: 0.26 },
+      },
+      parallax: {
+        cameraX: 0.15,
+        cameraY: 0.08,
+        targetX: 0.07,
+        targetY: 0.04,
+      },
+      smoothing: {
+        pointer: 2,
+        cameraPosition: 2.2,
+        targetOffset: 2.6,
+      },
+      clamps: {
+        cameraX: 0.22,
+        cameraY: 0.12,
+        targetX: 0.12,
+        targetY: 0.075,
+      },
     },
   },
   mobile: {
@@ -66,11 +104,30 @@ const ART_DIRECTION = {
       targetRadius: 4.3,
     },
     modelRotationY: -0.24,
-    parallax: {
-      cameraX: 0.26,
-      cameraY: 0.12,
-      targetX: 0.12,
-      targetY: 0.07,
+    cameraRig: {
+      microDrift: {
+        cameraAmplitude: { x: 0.1, y: 0.04, z: 0.08 },
+        cameraFrequency: { x: 0.36, y: 0.24, z: 0.3 },
+        targetAmplitude: { x: 0.05, y: 0.022, z: 0.036 },
+        targetFrequency: { x: 0.28, y: 0.22, z: 0.24 },
+      },
+      parallax: {
+        cameraX: 0.11,
+        cameraY: 0.065,
+        targetX: 0.05,
+        targetY: 0.035,
+      },
+      smoothing: {
+        pointer: 1.8,
+        cameraPosition: 2,
+        targetOffset: 2.4,
+      },
+      clamps: {
+        cameraX: 0.16,
+        cameraY: 0.09,
+        targetX: 0.09,
+        targetY: 0.06,
+      },
     },
   },
 } as const;
@@ -150,6 +207,8 @@ function CameraRig({
   const smoothTargetOffset = useRef({ x: 0, y: 0 });
   const baseCameraPosition = useRef(new Vector3(0, 0, 0));
   const baseTarget = useRef(new Vector3(0, 0, 0));
+  const clampAround = (value: number, base: number, maxDelta: number) =>
+    MathUtils.clamp(value, base - maxDelta, base + maxDelta);
 
   useFrame((state, delta) => {
     const { clock, camera } = state;
@@ -164,46 +223,62 @@ function CameraRig({
     });
     const cameraOffset = new Vector3(...artDirection.cameraOffset);
     const targetOffset = new Vector3(...artDirection.targetOffset);
+    const { microDrift, parallax, smoothing, clamps } = artDirection.cameraRig;
 
     baseCameraPosition.current.copy(fit.autoCameraPosition).add(cameraOffset);
     baseTarget.current.copy(fit.autoTarget).add(targetOffset);
 
-    smoothPointer.current.x = MathUtils.damp(smoothPointer.current.x, pointer.x, 3.2, delta);
-    smoothPointer.current.y = MathUtils.damp(smoothPointer.current.y, pointer.y, 3.2, delta);
+    smoothPointer.current.x = MathUtils.damp(smoothPointer.current.x, pointer.x, smoothing.pointer, delta);
+    smoothPointer.current.y = MathUtils.damp(smoothPointer.current.y, pointer.y, smoothing.pointer, delta);
 
-    const idleX = Math.sin(loop * 1.03) * 0.85;
-    const idleY = Math.sin(loop * 0.67) * 0.28;
-    const idleZ = Math.cos(loop * 0.87) * 0.55;
+    const idleX = Math.sin(loop * microDrift.cameraFrequency.x) * microDrift.cameraAmplitude.x;
+    const idleY = Math.sin(loop * microDrift.cameraFrequency.y) * microDrift.cameraAmplitude.y;
+    const idleZ = Math.cos(loop * microDrift.cameraFrequency.z) * microDrift.cameraAmplitude.z;
 
-    const targetIdleX = Math.sin(loop * 0.81) * 0.35;
-    const targetIdleY = Math.cos(loop * 0.59) * 0.14;
-    const targetIdleZ = Math.sin(loop * 0.73) * 0.22;
+    const targetIdleX = Math.sin(loop * microDrift.targetFrequency.x) * microDrift.targetAmplitude.x;
+    const targetIdleY = Math.cos(loop * microDrift.targetFrequency.y) * microDrift.targetAmplitude.y;
+    const targetIdleZ = Math.sin(loop * microDrift.targetFrequency.z) * microDrift.targetAmplitude.z;
 
-    const nextX = baseCameraPosition.current.x + idleX + smoothPointer.current.x * artDirection.parallax.cameraX;
-    const nextY = baseCameraPosition.current.y + idleY + smoothPointer.current.y * artDirection.parallax.cameraY;
-    const nextZ = baseCameraPosition.current.z + idleZ;
+    const baseShotCameraX = baseCameraPosition.current.x;
+    const baseShotCameraY = baseCameraPosition.current.y;
+    const baseShotCameraZ = baseCameraPosition.current.z;
+    const microDriftCameraX = idleX;
+    const microDriftCameraY = idleY;
+    const microDriftCameraZ = idleZ;
+    const parallaxCameraX = smoothPointer.current.x * parallax.cameraX;
+    const parallaxCameraY = smoothPointer.current.y * parallax.cameraY;
 
-    camera.position.x = MathUtils.damp(camera.position.x, nextX, 3.4, delta);
-    camera.position.y = MathUtils.damp(camera.position.y, nextY, 3.4, delta);
-    camera.position.z = MathUtils.damp(camera.position.z, nextZ, 3.4, delta);
+    const nextX = clampAround(baseShotCameraX + microDriftCameraX + parallaxCameraX, baseShotCameraX, clamps.cameraX);
+    const nextY = clampAround(baseShotCameraY + microDriftCameraY + parallaxCameraY, baseShotCameraY, clamps.cameraY);
+    const nextZ = baseShotCameraZ + microDriftCameraZ;
+
+    camera.position.x = MathUtils.damp(camera.position.x, nextX, smoothing.cameraPosition, delta);
+    camera.position.y = MathUtils.damp(camera.position.y, nextY, smoothing.cameraPosition, delta);
+    camera.position.z = MathUtils.damp(camera.position.z, nextZ, smoothing.cameraPosition, delta);
 
     smoothTargetOffset.current.x = MathUtils.damp(
       smoothTargetOffset.current.x,
-      smoothPointer.current.x * artDirection.parallax.targetX,
-      4.4,
+      smoothPointer.current.x * parallax.targetX,
+      smoothing.targetOffset,
       delta,
     );
     smoothTargetOffset.current.y = MathUtils.damp(
       smoothTargetOffset.current.y,
-      smoothPointer.current.y * artDirection.parallax.targetY,
-      4.4,
+      smoothPointer.current.y * parallax.targetY,
+      smoothing.targetOffset,
       delta,
     );
 
+    const baseShotTargetX = baseTarget.current.x;
+    const baseShotTargetY = baseTarget.current.y;
+    const baseShotTargetZ = baseTarget.current.z;
+    const parallaxTargetX = smoothTargetOffset.current.x;
+    const parallaxTargetY = smoothTargetOffset.current.y;
+
     camera.lookAt(
-      baseTarget.current.x + targetIdleX + smoothTargetOffset.current.x,
-      baseTarget.current.y + targetIdleY + smoothTargetOffset.current.y,
-      baseTarget.current.z + targetIdleZ,
+      clampAround(baseShotTargetX + targetIdleX + parallaxTargetX, baseShotTargetX, clamps.targetX),
+      clampAround(baseShotTargetY + targetIdleY + parallaxTargetY, baseShotTargetY, clamps.targetY),
+      baseShotTargetZ + targetIdleZ,
     );
   });
 
