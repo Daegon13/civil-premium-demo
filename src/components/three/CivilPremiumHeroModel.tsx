@@ -179,21 +179,27 @@ function HeroSceneModel({
     const finalScale = normalizedScale * artScale;
 
     const [compositionX, compositionY, compositionZ] = compositionOffset;
-    const baseX = offsetX + compositionX;
-    const baseY = offsetY + compositionY;
-    const baseZ = offsetZ + compositionZ;
+    const artOffset = new Vector3(offsetX + compositionX, offsetY + compositionY, offsetZ + compositionZ);
+    const technicalAutoCenter = new Vector3(
+      -center.x * finalScale,
+      -bounds.min.y * finalScale,
+      -center.z * finalScale,
+    );
+    const artisticPosition = technicalAutoCenter.clone().add(artOffset);
 
     modelRootRef.current.scale.setScalar(finalScale);
-    modelRootRef.current.position.set(
-      -center.x * finalScale + baseX,
-      -bounds.min.y * finalScale + baseY,
-      -center.z * finalScale + baseZ,
-    );
+    modelRootRef.current.position.copy(artisticPosition);
     modelRootRef.current.rotation.set(0, artDirection.modelRotationY, 0);
 
     const scaledSize = size.multiplyScalar(finalScale);
+    const referenceCenter = new Vector3(
+      artOffset.x,
+      artOffset.y + scaledSize.y * verticalAnchor,
+      artOffset.z,
+    );
+
     onBoundsChange({
-      center: [baseX, baseY + scaledSize.y * verticalAnchor, baseZ],
+      center: [referenceCenter.x, referenceCenter.y, referenceCenter.z],
       size: [scaledSize.x, scaledSize.y, scaledSize.z],
     });
   }, [breakpoint, onBoundsChange, sceneClone]);
@@ -245,7 +251,9 @@ function CameraRig({
       baseTarget.current.set(...FIXED_CAMERA_DEBUG.target);
     } else {
       baseCameraPosition.current.copy(fit.autoCameraPosition).add(cameraOffset);
-      baseTarget.current.copy(fit.autoTarget).add(targetOffset);
+      baseTarget.current
+        .set(bounds.center[0], bounds.center[1], bounds.center[2])
+        .add(targetOffset);
     }
 
     smoothPointer.current.x = MathUtils.damp(smoothPointer.current.x, pointer.x, smoothing.pointer, delta);
@@ -381,7 +389,14 @@ export function CivilPremiumHeroModel() {
   }, []);
 
   const baseCamera = FORCE_FIXED_CAMERA_FOR_DEBUG ? FIXED_CAMERA_DEBUG.position : ([6.8, 3.5, 5.2] as const);
-  const baseTarget = [1.3, 0.9, -0.1] as const;
+  const baseTarget = useMemo<[number, number, number]>(() => {
+    const targetOffset = ART_DIRECTION[breakpoint].targetOffset;
+    return [
+      bounds.center[0] + targetOffset[0],
+      bounds.center[1] + targetOffset[1],
+      bounds.center[2] + targetOffset[2],
+    ];
+  }, [bounds.center, breakpoint]);
 
   return (
     <div
