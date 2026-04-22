@@ -6,49 +6,49 @@ import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Box3, Group, MathUtils, Object3D, Vector3 } from "three";
 
 const MODEL_PATH = "/models/barcelona_pavilion_3d_demo/scene.gltf";
-const DEBUG_CONTROLS = process.env.NEXT_PUBLIC_DEBUG_HERO_CONTROLS === "1";
-const IDLE_SECONDS = 16;
+const DEBUG_CONTROLS = false;
+const IDLE_SECONDS = 11;
 
 type Breakpoint = "desktop" | "tablet" | "mobile";
 
 const ART_DIRECTION = {
   desktop: {
-    cameraPosition: [12.8, 5.4, 8.6] as const,
-    cameraTarget: [1.8, 1.15, -0.2] as const,
-    modelScale: 1.28,
-    modelPosition: [2.2, -0.55, -0.6] as const,
-    modelRotationY: -0.34,
+    cameraPosition: [8.4, 3.8, 5.6] as const,
+    cameraTarget: [1.4, 0.9, -0.1] as const,
+    modelScale: 1.85,
+    modelPosition: [1.4, -0.52, -0.35] as const,
+    modelRotationY: -0.28,
     parallax: {
-      cameraX: 0.22,
-      cameraY: 0.12,
-      targetX: 0.1,
-      targetY: 0.06,
+      cameraX: 0.45,
+      cameraY: 0.22,
+      targetX: 0.18,
+      targetY: 0.1,
     },
   },
   tablet: {
-    cameraPosition: [13.4, 6.0, 9.4] as const,
-    cameraTarget: [1.8, 1.15, -0.2] as const,
-    modelScale: 1.18,
-    modelPosition: [1.8, -0.55, -0.5] as const,
-    modelRotationY: -0.34,
+    cameraPosition: [8.2, 4.0, 5.75] as const,
+    cameraTarget: [1.35, 0.92, -0.1] as const,
+    modelScale: 1.76,
+    modelPosition: [1.28, -0.52, -0.33] as const,
+    modelRotationY: -0.28,
     parallax: {
-      cameraX: 0.16,
-      cameraY: 0.08,
-      targetX: 0.07,
-      targetY: 0.04,
+      cameraX: 0.36,
+      cameraY: 0.18,
+      targetX: 0.15,
+      targetY: 0.09,
     },
   },
   mobile: {
-    cameraPosition: [9.5, 5.8, 8.8] as const,
-    cameraTarget: [1.3, 1.2, -0.1] as const,
-    modelScale: 1.05,
-    modelPosition: [1.2, -0.55, -0.3] as const,
-    modelRotationY: -0.18,
+    cameraPosition: [8.15, 4.05, 5.95] as const,
+    cameraTarget: [1.28, 0.95, -0.06] as const,
+    modelScale: 1.62,
+    modelPosition: [1.12, -0.5, -0.25] as const,
+    modelRotationY: -0.24,
     parallax: {
-      cameraX: 0,
-      cameraY: 0,
-      targetX: 0,
-      targetY: 0,
+      cameraX: 0.26,
+      cameraY: 0.12,
+      targetX: 0.12,
+      targetY: 0.07,
     },
   },
 } as const;
@@ -105,32 +105,32 @@ function CameraRig({ pointer, breakpoint }: { pointer: { x: number; y: number };
     smoothPointer.current.x = MathUtils.damp(smoothPointer.current.x, pointer.x, 3.2, delta);
     smoothPointer.current.y = MathUtils.damp(smoothPointer.current.y, pointer.y, 3.2, delta);
 
-    const idleX = Math.sin(loop) * 0.42;
-    const idleY = Math.sin(loop * 0.63) * 0.16;
-    const idleZ = Math.cos(loop * 0.91) * 0.28;
+    const idleX = Math.sin(loop * 1.03) * 0.85;
+    const idleY = Math.sin(loop * 0.67) * 0.28;
+    const idleZ = Math.cos(loop * 0.87) * 0.55;
 
-    const targetIdleX = Math.sin(loop * 0.7) * 0.18;
-    const targetIdleY = Math.cos(loop * 0.56) * 0.08;
-    const targetIdleZ = Math.sin(loop * 0.76) * 0.12;
+    const targetIdleX = Math.sin(loop * 0.81) * 0.35;
+    const targetIdleY = Math.cos(loop * 0.59) * 0.14;
+    const targetIdleZ = Math.sin(loop * 0.73) * 0.22;
 
     const nextX = basePosition.x + idleX + smoothPointer.current.x * parallax.cameraX;
     const nextY = basePosition.y + idleY + smoothPointer.current.y * parallax.cameraY;
     const nextZ = basePosition.z + idleZ;
 
-    camera.position.x = MathUtils.damp(camera.position.x, nextX, 2.1, delta);
-    camera.position.y = MathUtils.damp(camera.position.y, nextY, 2.1, delta);
-    camera.position.z = MathUtils.damp(camera.position.z, nextZ, 2.1, delta);
+    camera.position.x = MathUtils.damp(camera.position.x, nextX, 3.4, delta);
+    camera.position.y = MathUtils.damp(camera.position.y, nextY, 3.4, delta);
+    camera.position.z = MathUtils.damp(camera.position.z, nextZ, 3.4, delta);
 
     smoothTargetOffset.current.x = MathUtils.damp(
       smoothTargetOffset.current.x,
       smoothPointer.current.x * parallax.targetX,
-      3,
+      4.4,
       delta,
     );
     smoothTargetOffset.current.y = MathUtils.damp(
       smoothTargetOffset.current.y,
       smoothPointer.current.y * parallax.targetY,
-      3,
+      4.4,
       delta,
     );
 
@@ -203,8 +203,8 @@ export function CivilPremiumHeroModel() {
       <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(5,7,11,0.8)_0%,rgba(8,13,20,0.28)_42%,rgba(6,9,14,0.9)_100%)]" />
 
       <Canvas
-        camera={{ position: baseCamera, fov: 32, near: 0.1, far: 100 }}
-        dpr={breakpoint === "mobile" ? [1, 1.2] : [1, 1.5]}
+        camera={{ position: baseCamera, fov: 30, near: 0.1, far: 100 }}
+        dpr={breakpoint === "mobile" ? [1, 1.25] : [1, 1.6]}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
       >
         <ambientLight intensity={0.42} />
@@ -221,11 +221,19 @@ export function CivilPremiumHeroModel() {
           <meshStandardMaterial color="#1c2128" transparent opacity={0.18} roughness={1} metalness={0} />
         </mesh>
 
-        <CameraRig pointer={pointer} breakpoint={breakpoint} />
-
         {DEBUG_CONTROLS ? (
-          <OrbitControls enablePan={false} minDistance={8} maxDistance={20} target={baseTarget} />
-        ) : null}
+          <OrbitControls
+            makeDefault
+            enablePan={false}
+            enableDamping
+            dampingFactor={0.08}
+            minDistance={5.5}
+            maxDistance={16}
+            target={baseTarget}
+          />
+        ) : (
+          <CameraRig pointer={pointer} breakpoint={breakpoint} />
+        )}
       </Canvas>
 
       <div className="pointer-events-none absolute inset-y-0 left-0 w-[42%] bg-gradient-to-r from-[#090d13] via-[#090d13]/68 to-transparent" />
