@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
-import { Box3, Group, MathUtils, Object3D, Vector3 } from "three";
+import { Box3, Group, MathUtils, Object3D, Sphere, Vector3 } from "three";
 import { getAutoCameraFit } from "./lib/cameraFit";
 
 const MODEL_PATH = "/models/barcelona_pavilion_3d_demo/scene.gltf";
@@ -16,9 +16,15 @@ const ART_DIRECTION = {
   desktop: {
     cameraOffset: [0.28, 0.1, -0.18] as const,
     targetOffset: [0, 0.1, 0.14] as const,
-    fitPadding: 1.06,
     modelScale: 1.85,
     modelPosition: [1.4, -0.52, -0.35] as const,
+    modelFit: {
+      fitPadding: 1.06,
+      verticalAnchor: 0.24,
+      compositionOffset: [0.06, 0.08, -0.05] as const,
+      desiredVisibleHeight: 8.8,
+      targetRadius: 4.7,
+    },
     modelRotationY: -0.28,
     parallax: {
       cameraX: 0.45,
@@ -30,9 +36,15 @@ const ART_DIRECTION = {
   tablet: {
     cameraOffset: [0.2, 0.12, -0.2] as const,
     targetOffset: [0, 0.1, 0.12] as const,
-    fitPadding: 1.09,
     modelScale: 1.76,
     modelPosition: [1.28, -0.52, -0.33] as const,
+    modelFit: {
+      fitPadding: 1.09,
+      verticalAnchor: 0.25,
+      compositionOffset: [0.04, 0.1, -0.04] as const,
+      desiredVisibleHeight: 8.4,
+      targetRadius: 4.5,
+    },
     modelRotationY: -0.28,
     parallax: {
       cameraX: 0.36,
@@ -44,9 +56,15 @@ const ART_DIRECTION = {
   mobile: {
     cameraOffset: [0.14, 0.14, -0.16] as const,
     targetOffset: [0, 0.09, 0.1] as const,
-    fitPadding: 1.12,
     modelScale: 1.62,
     modelPosition: [1.12, -0.5, -0.25] as const,
+    modelFit: {
+      fitPadding: 1.12,
+      verticalAnchor: 0.28,
+      compositionOffset: [0.02, 0.12, -0.02] as const,
+      desiredVisibleHeight: 8,
+      targetRadius: 4.3,
+    },
     modelRotationY: -0.24,
     parallax: {
       cameraX: 0.26,
@@ -81,23 +99,33 @@ function HeroSceneModel({
     const bounds = new Box3().setFromObject(sceneClone);
     const center = bounds.getCenter(new Vector3());
     const size = bounds.getSize(new Vector3());
-    const longestSide = Math.max(size.x, size.y, size.z);
-    const normalizedScale = longestSide > 0 ? 11 / longestSide : 1;
+    const sphere = bounds.getBoundingSphere(new Sphere());
     const artDirection = ART_DIRECTION[breakpoint];
     const artScale = artDirection.modelScale;
     const [offsetX, offsetY, offsetZ] = artDirection.modelPosition;
+    const { fitPadding, verticalAnchor, compositionOffset, desiredVisibleHeight, targetRadius } = artDirection.modelFit;
 
-    modelRootRef.current.scale.setScalar(normalizedScale * artScale);
+    const boxHeightScale = size.y > 0 ? (desiredVisibleHeight * fitPadding) / size.y : 1;
+    const sphereScale = sphere.radius > 0 ? (targetRadius * fitPadding) / sphere.radius : boxHeightScale;
+    const normalizedScale = size.y > 0 ? boxHeightScale : sphereScale;
+    const finalScale = normalizedScale * artScale;
+
+    const [compositionX, compositionY, compositionZ] = compositionOffset;
+    const baseX = offsetX + compositionX;
+    const baseY = offsetY + compositionY;
+    const baseZ = offsetZ + compositionZ;
+
+    modelRootRef.current.scale.setScalar(finalScale);
     modelRootRef.current.position.set(
-      -center.x * normalizedScale * artScale + offsetX,
-      -bounds.min.y * normalizedScale * artScale + offsetY,
-      -center.z * normalizedScale * artScale + offsetZ,
+      -center.x * finalScale + baseX,
+      -bounds.min.y * finalScale + baseY,
+      -center.z * finalScale + baseZ,
     );
     modelRootRef.current.rotation.set(0, artDirection.modelRotationY, 0);
 
-    const scaledSize = size.multiplyScalar(normalizedScale * artScale);
+    const scaledSize = size.multiplyScalar(finalScale);
     onBoundsChange({
-      center: [offsetX, offsetY + scaledSize.y / 2, offsetZ],
+      center: [baseX, baseY + scaledSize.y * verticalAnchor, baseZ],
       size: [scaledSize.x, scaledSize.y, scaledSize.z],
     });
   }, [breakpoint, onBoundsChange, sceneClone]);
@@ -132,7 +160,7 @@ function CameraRig({
       boundsCenter: new Vector3(...bounds.center),
       fov: camera.fov,
       aspect: state.size.width / Math.max(state.size.height, 1),
-      fitPadding: artDirection.fitPadding,
+      fitPadding: artDirection.modelFit.fitPadding,
     });
     const cameraOffset = new Vector3(...artDirection.cameraOffset);
     const targetOffset = new Vector3(...artDirection.targetOffset);
