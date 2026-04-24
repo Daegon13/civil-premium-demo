@@ -484,7 +484,7 @@ export function CivilPremiumHeroModel() {
 
   return (
     <div
-      className="group relative h-[clamp(21.5rem,42vw,28rem)] w-full overflow-hidden rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--color-border)_75%,var(--color-accent)_25%)] bg-[radial-gradient(circle_at_72%_38%,rgba(72,84,99,0.22)_0%,rgba(20,24,30,0)_34%),linear-gradient(135deg,#0f141b_0%,#161d26_50%,#0d1117_100%)] shadow-[0_34px_90px_rgba(2,8,18,0.46)]"
+      className="group relative aspect-[16/10] w-full min-h-[20rem] max-h-[29rem] overflow-hidden rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--color-border)_75%,var(--color-accent)_25%)] bg-[radial-gradient(circle_at_72%_38%,rgba(72,84,99,0.22)_0%,rgba(20,24,30,0)_34%),linear-gradient(135deg,#0f141b_0%,#161d26_50%,#0d1117_100%)] shadow-[0_34px_90px_rgba(2,8,18,0.46)]"
       onPointerMove={(event) => {
         const rect = event.currentTarget.getBoundingClientRect();
         const nx = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
