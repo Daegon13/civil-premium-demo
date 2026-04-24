@@ -26,18 +26,18 @@ type Breakpoint = "desktop" | "tablet" | "mobile";
 
 const ART_DIRECTION = {
   desktop: {
-    cameraOffset: [0.28, 0.1, -0.18] as const,
-    targetOffset: [0, 0.1, 0.14] as const,
-    modelScale: 1.85,
-    modelPosition: [1.4, -0.52, -0.35] as const,
+    cameraOffset: [0.36, 0.16, 0.28] as const,
+    targetOffset: [0.03, 0.08, 0.18] as const,
+    modelScale: 1.74,
+    modelPosition: [1.24, -0.5, -0.2] as const,
     modelFit: {
-      fitPadding: 1.06,
-      verticalAnchor: 0.24,
-      compositionOffset: [0.06, 0.08, -0.05] as const,
-      desiredVisibleHeight: 8.8,
-      targetRadius: 4.7,
+      fitPadding: 1.12,
+      verticalAnchor: 0.22,
+      compositionOffset: [0.14, 0.04, 0.04] as const,
+      desiredVisibleHeight: 8.45,
+      targetRadius: 4.95,
     },
-    modelRotationY: -0.28,
+    modelRotationY: -0.22,
     cameraRig: {
       microDrift: {
         cameraAmplitude: { x: 0.09, y: 0.038, z: 0.07 },
@@ -59,27 +59,27 @@ const ART_DIRECTION = {
       clamps: {
         cameraX: 0.22,
         cameraY: 0.12,
-        cameraZ: 0.1,
+        cameraZ: 0.12,
         targetX: 0.11,
         targetY: 0.07,
         targetZ: 0.08,
-        modelRadiusMultiplier: 1.12,
+        modelRadiusMultiplier: 1.2,
       },
     },
   },
   tablet: {
-    cameraOffset: [0.2, 0.12, -0.2] as const,
-    targetOffset: [0, 0.1, 0.12] as const,
-    modelScale: 1.76,
-    modelPosition: [1.28, -0.52, -0.33] as const,
+    cameraOffset: [0.3, 0.18, 0.22] as const,
+    targetOffset: [0.02, 0.08, 0.16] as const,
+    modelScale: 1.64,
+    modelPosition: [1.16, -0.48, -0.14] as const,
     modelFit: {
-      fitPadding: 1.09,
-      verticalAnchor: 0.25,
-      compositionOffset: [0.04, 0.1, -0.04] as const,
-      desiredVisibleHeight: 8.4,
-      targetRadius: 4.5,
+      fitPadding: 1.14,
+      verticalAnchor: 0.23,
+      compositionOffset: [0.12, 0.06, 0.02] as const,
+      desiredVisibleHeight: 8.1,
+      targetRadius: 4.75,
     },
-    modelRotationY: -0.28,
+    modelRotationY: -0.2,
     cameraRig: {
       microDrift: {
         cameraAmplitude: { x: 0.08, y: 0.032, z: 0.06 },
@@ -101,27 +101,27 @@ const ART_DIRECTION = {
       clamps: {
         cameraX: 0.18,
         cameraY: 0.1,
-        cameraZ: 0.08,
+        cameraZ: 0.1,
         targetX: 0.095,
         targetY: 0.06,
         targetZ: 0.065,
-        modelRadiusMultiplier: 1.14,
+        modelRadiusMultiplier: 1.23,
       },
     },
   },
   mobile: {
-    cameraOffset: [0.14, 0.14, -0.16] as const,
-    targetOffset: [0, 0.09, 0.1] as const,
-    modelScale: 1.62,
-    modelPosition: [1.12, -0.5, -0.25] as const,
+    cameraOffset: [0.24, 0.2, 0.18] as const,
+    targetOffset: [0.02, 0.08, 0.14] as const,
+    modelScale: 1.5,
+    modelPosition: [1.04, -0.45, -0.08] as const,
     modelFit: {
-      fitPadding: 1.12,
-      verticalAnchor: 0.28,
-      compositionOffset: [0.02, 0.12, -0.02] as const,
-      desiredVisibleHeight: 8,
-      targetRadius: 4.3,
+      fitPadding: 1.17,
+      verticalAnchor: 0.24,
+      compositionOffset: [0.09, 0.08, 0.01] as const,
+      desiredVisibleHeight: 7.7,
+      targetRadius: 4.55,
     },
-    modelRotationY: -0.24,
+    modelRotationY: -0.16,
     cameraRig: {
       microDrift: {
         cameraAmplitude: { x: 0.06, y: 0.028, z: 0.05 },
@@ -143,11 +143,11 @@ const ART_DIRECTION = {
       clamps: {
         cameraX: 0.13,
         cameraY: 0.075,
-        cameraZ: 0.065,
+        cameraZ: 0.085,
         targetX: 0.07,
         targetY: 0.045,
         targetZ: 0.05,
-        modelRadiusMultiplier: 1.16,
+        modelRadiusMultiplier: 1.26,
       },
     },
   },
@@ -451,7 +451,7 @@ export function CivilPremiumHeroModel() {
     };
   }, []);
 
-  const baseCamera = FORCE_FIXED_CAMERA_FOR_DEBUG ? FIXED_CAMERA_DEBUG.position : ([6.8, 3.5, 5.2] as const);
+  const baseCamera = FORCE_FIXED_CAMERA_FOR_DEBUG ? FIXED_CAMERA_DEBUG.position : ([7.6, 3.9, 5.9] as const);
   const baseTarget = useMemo<[number, number, number]>(() => {
     const targetOffset = ART_DIRECTION[breakpoint].targetOffset;
     return [
@@ -478,8 +478,8 @@ export function CivilPremiumHeroModel() {
         camera={{
           position: baseCamera,
           fov: FORCE_FIXED_CAMERA_FOR_DEBUG ? FIXED_CAMERA_DEBUG.fov : 30,
-          near: FORCE_FIXED_CAMERA_FOR_DEBUG ? FIXED_CAMERA_DEBUG.near : 0.25,
-          far: FORCE_FIXED_CAMERA_FOR_DEBUG ? FIXED_CAMERA_DEBUG.far : 120,
+          near: FORCE_FIXED_CAMERA_FOR_DEBUG ? FIXED_CAMERA_DEBUG.near : 0.12,
+          far: FORCE_FIXED_CAMERA_FOR_DEBUG ? FIXED_CAMERA_DEBUG.far : 140,
         }}
         dpr={breakpoint === "mobile" ? [1, 1.25] : [1, 1.6]}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
