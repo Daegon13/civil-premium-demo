@@ -7,7 +7,7 @@ import { Box3, Group, MathUtils, Object3D, PerspectiveCamera, Sphere, Vector3 } 
 import { getAutoCameraFit } from "./lib/cameraFit";
 
 const MODEL_PATH = "/models/arch-hero-generator_v003.glb";
-const DEBUG_CONTROLS = false;
+const DEBUG_CONTROLS = true;
 const CAMERA_RIG_DEBUG = false;
 // Diagnóstico temporal: cámara fija para verificar clipping/cortes.
 // Si con este modo desaparece el corte, la causa está en offsets/animación del rig.
@@ -419,10 +419,23 @@ useGLTF.preload(MODEL_PATH);
 export function CivilPremiumHeroModel() {
   const [pointer, setPointer] = useState({ x: 0, y: 0 });
   const [breakpoint, setBreakpoint] = useState<Breakpoint>("desktop");
+  const [isUserInteracting, setIsUserInteracting] = useState(false);
+  const resumeAutoRotateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [bounds, setBounds] = useState<BoundsSnapshot>({
     center: [0, 0.8, 0],
     size: [8, 4, 6],
   });
+
+  const pauseAutoRotateForUserInteraction = () => {
+    setIsUserInteracting(true);
+    if (resumeAutoRotateTimerRef.current) {
+      clearTimeout(resumeAutoRotateTimerRef.current);
+    }
+
+    resumeAutoRotateTimerRef.current = setTimeout(() => {
+      setIsUserInteracting(false);
+    }, IDLE_SECONDS * 1000);
+  };
 
   useEffect(() => {
     const mobileQuery = window.matchMedia("(max-width: 767px)");
@@ -451,7 +464,15 @@ export function CivilPremiumHeroModel() {
     };
   }, []);
 
-  const baseCamera = FORCE_FIXED_CAMERA_FOR_DEBUG ? FIXED_CAMERA_DEBUG.position : ([7.6, 3.9, 5.9] as const);
+  useEffect(() => {
+    return () => {
+      if (resumeAutoRotateTimerRef.current) {
+        clearTimeout(resumeAutoRotateTimerRef.current);
+      }
+    };
+  }, []);
+
+  const baseCamera = FORCE_FIXED_CAMERA_FOR_DEBUG ? FIXED_CAMERA_DEBUG.position : ([6.4, 3.35, 4.9] as const);
   const baseTarget = useMemo<[number, number, number]>(() => {
     const targetOffset = ART_DIRECTION[breakpoint].targetOffset;
     return [
@@ -463,7 +484,7 @@ export function CivilPremiumHeroModel() {
 
   return (
     <div
-      className="group relative min-h-[25rem] overflow-hidden rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--color-border)_75%,var(--color-accent)_25%)] bg-[radial-gradient(circle_at_72%_38%,rgba(72,84,99,0.22)_0%,rgba(20,24,30,0)_34%),linear-gradient(135deg,#0f141b_0%,#161d26_50%,#0d1117_100%)] shadow-[0_34px_90px_rgba(2,8,18,0.46)] sm:min-h-[27rem] lg:min-h-[31rem]"
+      className="group relative h-[19.5rem] overflow-hidden rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--color-border)_75%,var(--color-accent)_25%)] bg-[radial-gradient(circle_at_72%_38%,rgba(72,84,99,0.22)_0%,rgba(20,24,30,0)_34%),linear-gradient(135deg,#0f141b_0%,#161d26_50%,#0d1117_100%)] shadow-[0_34px_90px_rgba(2,8,18,0.46)] sm:h-[22rem] lg:h-[25rem]"
       onPointerMove={(event) => {
         const rect = event.currentTarget.getBoundingClientRect();
         const nx = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
@@ -471,6 +492,7 @@ export function CivilPremiumHeroModel() {
         setPointer({ x: nx, y: ny });
       }}
       onPointerLeave={() => setPointer({ x: 0, y: 0 })}
+      onPointerDown={pauseAutoRotateForUserInteraction}
     >
       <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(5,7,11,0.8)_0%,rgba(8,13,20,0.28)_42%,rgba(6,9,14,0.9)_100%)]" />
 
@@ -493,7 +515,7 @@ export function CivilPremiumHeroModel() {
           <HeroSceneModel breakpoint={breakpoint} onBoundsChange={setBounds} />
         </Suspense>
 
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.15, 0]} scale={[40, 40, 1]}>
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.05, 0]} scale={[28, 28, 1]}>
           <planeGeometry args={[1, 1]} />
           <meshStandardMaterial color="#1c2128" transparent opacity={0.18} roughness={1} metalness={0} />
         </mesh>
@@ -504,9 +526,13 @@ export function CivilPremiumHeroModel() {
             enablePan={false}
             enableDamping
             dampingFactor={0.08}
-            minDistance={5.5}
-            maxDistance={16}
+            autoRotate={!isUserInteracting}
+            autoRotateSpeed={0.55}
+            minDistance={4.5}
+            maxDistance={12}
             target={baseTarget}
+            onStart={pauseAutoRotateForUserInteraction}
+            onChange={pauseAutoRotateForUserInteraction}
           />
         ) : (
           <CameraRig
