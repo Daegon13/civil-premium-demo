@@ -7,7 +7,7 @@ import { Box3, Group, MathUtils, Object3D, PerspectiveCamera, Sphere, Vector3 } 
 import { getAutoCameraFit } from "./lib/cameraFit";
 
 const MODEL_PATH = "/models/arch-hero-generator_v003.glb";
-const DEBUG_CONTROLS = false;
+const DEBUG_CONTROLS = true;
 const CAMERA_RIG_DEBUG = false;
 // Diagnóstico temporal: cámara fija para verificar clipping/cortes.
 // Si con este modo desaparece el corte, la causa está en offsets/animación del rig.
@@ -419,10 +419,23 @@ useGLTF.preload(MODEL_PATH);
 export function CivilPremiumHeroModel() {
   const [pointer, setPointer] = useState({ x: 0, y: 0 });
   const [breakpoint, setBreakpoint] = useState<Breakpoint>("desktop");
+  const [isUserInteracting, setIsUserInteracting] = useState(false);
+  const resumeAutoRotateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [bounds, setBounds] = useState<BoundsSnapshot>({
     center: [0, 0.8, 0],
     size: [8, 4, 6],
   });
+
+  const pauseAutoRotateForUserInteraction = () => {
+    setIsUserInteracting(true);
+    if (resumeAutoRotateTimerRef.current) {
+      clearTimeout(resumeAutoRotateTimerRef.current);
+    }
+
+    resumeAutoRotateTimerRef.current = setTimeout(() => {
+      setIsUserInteracting(false);
+    }, IDLE_SECONDS * 1000);
+  };
 
   useEffect(() => {
     const mobileQuery = window.matchMedia("(max-width: 767px)");
@@ -451,6 +464,14 @@ export function CivilPremiumHeroModel() {
     };
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (resumeAutoRotateTimerRef.current) {
+        clearTimeout(resumeAutoRotateTimerRef.current);
+      }
+    };
+  }, []);
+
   const baseCamera = FORCE_FIXED_CAMERA_FOR_DEBUG ? FIXED_CAMERA_DEBUG.position : ([7.6, 3.9, 5.9] as const);
   const baseTarget = useMemo<[number, number, number]>(() => {
     const targetOffset = ART_DIRECTION[breakpoint].targetOffset;
@@ -471,6 +492,7 @@ export function CivilPremiumHeroModel() {
         setPointer({ x: nx, y: ny });
       }}
       onPointerLeave={() => setPointer({ x: 0, y: 0 })}
+      onPointerDown={pauseAutoRotateForUserInteraction}
     >
       <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(5,7,11,0.8)_0%,rgba(8,13,20,0.28)_42%,rgba(6,9,14,0.9)_100%)]" />
 
@@ -504,9 +526,13 @@ export function CivilPremiumHeroModel() {
             enablePan={false}
             enableDamping
             dampingFactor={0.08}
+            autoRotate={!isUserInteracting}
+            autoRotateSpeed={0.55}
             minDistance={5.5}
             maxDistance={16}
             target={baseTarget}
+            onStart={pauseAutoRotateForUserInteraction}
+            onChange={pauseAutoRotateForUserInteraction}
           />
         ) : (
           <CameraRig
