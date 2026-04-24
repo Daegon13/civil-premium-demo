@@ -6,7 +6,7 @@ import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Box3, Group, MathUtils, Object3D, PerspectiveCamera, Sphere, Vector3 } from "three";
 import { getAutoCameraFit } from "./lib/cameraFit";
 
-const MODEL_PATH = "/models/barcelona_pavilion_3d_demo/scene.gltf";
+const MODEL_PATH = "/models/arch-hero-generator_v003.glb";
 const DEBUG_CONTROLS = false;
 const CAMERA_RIG_DEBUG = false;
 // Diagnóstico temporal: cámara fija para verificar clipping/cortes.
