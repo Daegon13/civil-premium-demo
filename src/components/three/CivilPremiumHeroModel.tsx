@@ -32,10 +32,10 @@ const ART_DIRECTION = {
     modelPosition: [1.24, -0.5, -0.2] as const,
     modelFit: {
       fitPadding: 1.12,
-      verticalAnchor: 0.22,
+      verticalAnchor: 0.16,
       compositionOffset: [0.14, 0.04, 0.04] as const,
-      desiredVisibleHeight: 8.45,
-      targetRadius: 4.95,
+      desiredVisibleHeight: 7.05,
+      targetRadius: 4.35,
     },
     modelRotationY: -0.22,
     cameraRig: {
@@ -74,10 +74,10 @@ const ART_DIRECTION = {
     modelPosition: [1.16, -0.48, -0.14] as const,
     modelFit: {
       fitPadding: 1.14,
-      verticalAnchor: 0.23,
+      verticalAnchor: 0.17,
       compositionOffset: [0.12, 0.06, 0.02] as const,
-      desiredVisibleHeight: 8.1,
-      targetRadius: 4.75,
+      desiredVisibleHeight: 6.8,
+      targetRadius: 4.2,
     },
     modelRotationY: -0.2,
     cameraRig: {
@@ -116,10 +116,10 @@ const ART_DIRECTION = {
     modelPosition: [1.04, -0.45, -0.08] as const,
     modelFit: {
       fitPadding: 1.17,
-      verticalAnchor: 0.24,
+      verticalAnchor: 0.18,
       compositionOffset: [0.09, 0.08, 0.01] as const,
-      desiredVisibleHeight: 7.7,
-      targetRadius: 4.55,
+      desiredVisibleHeight: 6.45,
+      targetRadius: 4.05,
     },
     modelRotationY: -0.16,
     cameraRig: {
@@ -484,7 +484,7 @@ export function CivilPremiumHeroModel() {
 
   return (
     <div
-      className="group relative min-h-[25rem] overflow-hidden rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--color-border)_75%,var(--color-accent)_25%)] bg-[radial-gradient(circle_at_72%_38%,rgba(72,84,99,0.22)_0%,rgba(20,24,30,0)_34%),linear-gradient(135deg,#0f141b_0%,#161d26_50%,#0d1117_100%)] shadow-[0_34px_90px_rgba(2,8,18,0.46)] sm:min-h-[27rem] lg:min-h-[31rem]"
+      className="group relative h-[clamp(21.5rem,42vw,28rem)] w-full overflow-hidden rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--color-border)_75%,var(--color-accent)_25%)] bg-[radial-gradient(circle_at_72%_38%,rgba(72,84,99,0.22)_0%,rgba(20,24,30,0)_34%),linear-gradient(135deg,#0f141b_0%,#161d26_50%,#0d1117_100%)] shadow-[0_34px_90px_rgba(2,8,18,0.46)]"
       onPointerMove={(event) => {
         const rect = event.currentTarget.getBoundingClientRect();
         const nx = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
