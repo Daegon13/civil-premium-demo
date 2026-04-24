@@ -494,9 +494,10 @@ export function CivilPremiumHeroModel() {
       onPointerLeave={() => setPointer({ x: 0, y: 0 })}
       onPointerDown={pauseAutoRotateForUserInteraction}
     >
-      <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(5,7,11,0.8)_0%,rgba(8,13,20,0.28)_42%,rgba(6,9,14,0.9)_100%)]" />
+      <div className="absolute inset-0 z-0 bg-[linear-gradient(120deg,rgba(5,7,11,0.8)_0%,rgba(8,13,20,0.28)_42%,rgba(6,9,14,0.9)_100%)]" />
 
       <Canvas
+        className="relative z-10"
         camera={{
           position: baseCamera,
           fov: FORCE_FIXED_CAMERA_FOR_DEBUG ? FIXED_CAMERA_DEBUG.fov : 30,
@@ -544,9 +545,9 @@ export function CivilPremiumHeroModel() {
         )}
       </Canvas>
 
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-[42%] bg-gradient-to-r from-[#090d13] via-[#090d13]/68 to-transparent" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/45 to-transparent" />
-      <div className="pointer-events-none absolute right-3 top-3 rounded-full border border-white/20 bg-black/40 px-3 py-1 text-[0.6rem] uppercase tracking-[0.2em] text-white/70">
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-[42%] bg-gradient-to-r from-[#090d13] via-[#090d13]/68 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-24 bg-gradient-to-t from-black/45 to-transparent" />
+      <div className="pointer-events-none absolute right-3 top-3 z-30 rounded-full border border-white/20 bg-black/40 px-3 py-1 text-[0.6rem] uppercase tracking-[0.2em] text-white/70">
         3D Hero Demo
       </div>
     </div>
