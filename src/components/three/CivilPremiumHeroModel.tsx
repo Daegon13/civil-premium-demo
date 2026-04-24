@@ -8,9 +8,10 @@ import { getAutoCameraFit } from "./lib/cameraFit";
 
 const MODEL_PATH = "/models/barcelona_pavilion_3d_demo/scene.gltf";
 const DEBUG_CONTROLS = false;
+const CAMERA_RIG_DEBUG = false;
 // Diagnóstico temporal: cámara fija para verificar clipping/cortes.
 // Si con este modo desaparece el corte, la causa está en offsets/animación del rig.
-const FORCE_FIXED_CAMERA_FOR_DEBUG = true;
+const FORCE_FIXED_CAMERA_FOR_DEBUG = false;
 const IDLE_SECONDS = 11;
 
 const FIXED_CAMERA_DEBUG = {
@@ -39,16 +40,16 @@ const ART_DIRECTION = {
     modelRotationY: -0.28,
     cameraRig: {
       microDrift: {
-        cameraAmplitude: { x: 0.16, y: 0.06, z: 0.12 },
+        cameraAmplitude: { x: 0.09, y: 0.038, z: 0.07 },
         cameraFrequency: { x: 0.44, y: 0.3, z: 0.36 },
-        targetAmplitude: { x: 0.08, y: 0.03, z: 0.05 },
+        targetAmplitude: { x: 0.048, y: 0.02, z: 0.03 },
         targetFrequency: { x: 0.32, y: 0.26, z: 0.28 },
       },
       parallax: {
-        cameraX: 0.18,
-        cameraY: 0.1,
-        targetX: 0.08,
-        targetY: 0.05,
+        cameraX: 0.1,
+        cameraY: 0.06,
+        targetX: 0.048,
+        targetY: 0.03,
       },
       smoothing: {
         pointer: 2.2,
@@ -56,10 +57,13 @@ const ART_DIRECTION = {
         targetOffset: 2.8,
       },
       clamps: {
-        cameraX: 0.26,
-        cameraY: 0.14,
-        targetX: 0.15,
-        targetY: 0.09,
+        cameraX: 0.22,
+        cameraY: 0.12,
+        cameraZ: 0.1,
+        targetX: 0.11,
+        targetY: 0.07,
+        targetZ: 0.08,
+        modelRadiusMultiplier: 1.12,
       },
     },
   },
@@ -78,16 +82,16 @@ const ART_DIRECTION = {
     modelRotationY: -0.28,
     cameraRig: {
       microDrift: {
-        cameraAmplitude: { x: 0.14, y: 0.05, z: 0.1 },
+        cameraAmplitude: { x: 0.08, y: 0.032, z: 0.06 },
         cameraFrequency: { x: 0.4, y: 0.28, z: 0.34 },
-        targetAmplitude: { x: 0.07, y: 0.028, z: 0.045 },
+        targetAmplitude: { x: 0.04, y: 0.018, z: 0.028 },
         targetFrequency: { x: 0.3, y: 0.24, z: 0.26 },
       },
       parallax: {
-        cameraX: 0.15,
-        cameraY: 0.08,
-        targetX: 0.07,
-        targetY: 0.04,
+        cameraX: 0.085,
+        cameraY: 0.05,
+        targetX: 0.04,
+        targetY: 0.024,
       },
       smoothing: {
         pointer: 2,
@@ -95,10 +99,13 @@ const ART_DIRECTION = {
         targetOffset: 2.6,
       },
       clamps: {
-        cameraX: 0.22,
-        cameraY: 0.12,
-        targetX: 0.12,
-        targetY: 0.075,
+        cameraX: 0.18,
+        cameraY: 0.1,
+        cameraZ: 0.08,
+        targetX: 0.095,
+        targetY: 0.06,
+        targetZ: 0.065,
+        modelRadiusMultiplier: 1.14,
       },
     },
   },
@@ -117,16 +124,16 @@ const ART_DIRECTION = {
     modelRotationY: -0.24,
     cameraRig: {
       microDrift: {
-        cameraAmplitude: { x: 0.1, y: 0.04, z: 0.08 },
+        cameraAmplitude: { x: 0.06, y: 0.028, z: 0.05 },
         cameraFrequency: { x: 0.36, y: 0.24, z: 0.3 },
-        targetAmplitude: { x: 0.05, y: 0.022, z: 0.036 },
+        targetAmplitude: { x: 0.03, y: 0.014, z: 0.022 },
         targetFrequency: { x: 0.28, y: 0.22, z: 0.24 },
       },
       parallax: {
-        cameraX: 0.11,
-        cameraY: 0.065,
-        targetX: 0.05,
-        targetY: 0.035,
+        cameraX: 0.06,
+        cameraY: 0.04,
+        targetX: 0.03,
+        targetY: 0.02,
       },
       smoothing: {
         pointer: 1.8,
@@ -134,10 +141,13 @@ const ART_DIRECTION = {
         targetOffset: 2.4,
       },
       clamps: {
-        cameraX: 0.16,
-        cameraY: 0.09,
-        targetX: 0.09,
-        targetY: 0.06,
+        cameraX: 0.13,
+        cameraY: 0.075,
+        cameraZ: 0.065,
+        targetX: 0.07,
+        targetY: 0.045,
+        targetZ: 0.05,
+        modelRadiusMultiplier: 1.16,
       },
     },
   },
@@ -228,6 +238,7 @@ function CameraRig({
   const baseTarget = useRef(new Vector3(0, 0, 0));
   const computedCamera = useRef(new Vector3(0, 0, 0));
   const computedTarget = useRef(new Vector3(0, 0, 0));
+  const lastDebugLog = useRef(0);
   const clampAround = (value: number, base: number, maxDelta: number) =>
     MathUtils.clamp(value, base - maxDelta, base + maxDelta);
 
@@ -282,7 +293,9 @@ function CameraRig({
     const nextY = fixedMode
       ? baseShotCameraY
       : clampAround(baseShotCameraY + microDriftCameraY + parallaxCameraY, baseShotCameraY, clamps.cameraY);
-    const nextZ = fixedMode ? baseShotCameraZ : baseShotCameraZ + microDriftCameraZ;
+    const nextZ = fixedMode
+      ? baseShotCameraZ
+      : clampAround(baseShotCameraZ + microDriftCameraZ, baseShotCameraZ, clamps.cameraZ);
 
     computedCamera.current.set(nextX, nextY, nextZ);
 
@@ -311,14 +324,51 @@ function CameraRig({
     const targetY = fixedMode
       ? baseShotTargetY
       : clampAround(baseShotTargetY + targetIdleY + parallaxTargetY, baseShotTargetY, clamps.targetY);
-    const targetZ = fixedMode ? baseShotTargetZ : baseShotTargetZ + targetIdleZ;
+    const targetZ = fixedMode
+      ? baseShotTargetZ
+      : clampAround(baseShotTargetZ + targetIdleZ, baseShotTargetZ, clamps.targetZ);
 
     computedTarget.current.set(targetX, targetY, targetZ);
 
+    const boundsCenter = new Vector3(...bounds.center);
+    const boundsSize = new Vector3(...bounds.size);
+    const modelRadius = Math.max(boundsSize.length() * 0.5, 0.001);
+
+    const positionMin = new Vector3(
+      boundsCenter.x - boundsSize.x * 2.8,
+      boundsCenter.y - boundsSize.y * 0.55,
+      boundsCenter.z - boundsSize.z * 2.8,
+    );
+    const positionMax = new Vector3(
+      boundsCenter.x + boundsSize.x * 2.8,
+      boundsCenter.y + boundsSize.y * 2.1,
+      boundsCenter.z + boundsSize.z * 2.8,
+    );
+    computedCamera.current.set(
+      MathUtils.clamp(computedCamera.current.x, positionMin.x, positionMax.x),
+      MathUtils.clamp(computedCamera.current.y, positionMin.y, positionMax.y),
+      MathUtils.clamp(computedCamera.current.z, positionMin.z, positionMax.z),
+    );
+
+    const lookAtMin = new Vector3(
+      boundsCenter.x - boundsSize.x * 0.72,
+      boundsCenter.y - boundsSize.y * 0.2,
+      boundsCenter.z - boundsSize.z * 0.72,
+    );
+    const lookAtMax = new Vector3(
+      boundsCenter.x + boundsSize.x * 0.72,
+      boundsCenter.y + boundsSize.y * 0.95,
+      boundsCenter.z + boundsSize.z * 0.72,
+    );
+    computedTarget.current.set(
+      MathUtils.clamp(computedTarget.current.x, lookAtMin.x, lookAtMax.x),
+      MathUtils.clamp(computedTarget.current.y, lookAtMin.y, lookAtMax.y),
+      MathUtils.clamp(computedTarget.current.z, lookAtMin.z, lookAtMax.z),
+    );
+
     // Guard rail de runtime: evita que la cámara entre en el volumen aproximado del modelo.
-    const modelRadius = Math.max(new Vector3(...bounds.size).length() * 0.5, 0.001);
     const margin = Math.max(modelRadius * 0.08, camera.near * 2.25);
-    const minDistance = modelRadius + margin;
+    const minDistance = modelRadius * clamps.modelRadiusMultiplier + margin;
 
     const cameraToTarget = computedCamera.current.clone().sub(computedTarget.current);
     const currentDistance = cameraToTarget.length();
@@ -326,6 +376,19 @@ function CameraRig({
     if (currentDistance < minDistance) {
       cameraToTarget.normalize().multiplyScalar(minDistance || 0.001);
       computedCamera.current.copy(computedTarget.current).add(cameraToTarget);
+    }
+
+    if (CAMERA_RIG_DEBUG) {
+      const elapsed = clock.getElapsedTime();
+      if (elapsed - lastDebugLog.current > 0.25) {
+        const distanceToCenter = computedCamera.current.distanceTo(boundsCenter);
+        const unsafe = distanceToCenter < modelRadius;
+        const log = unsafe ? console.warn : console.info;
+        log(
+          `[CameraRig] distance(camera-center)=${distanceToCenter.toFixed(3)} radius=${modelRadius.toFixed(3)} minDistance=${minDistance.toFixed(3)} ${unsafe ? "⚠️ inside bounding sphere" : "ok"}`
+        );
+        lastDebugLog.current = elapsed;
+      }
     }
 
     if (fixedMode) {
