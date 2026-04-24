@@ -5,9 +5,9 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Box3, Group, Object3D, Vector3 } from "three";
 
-const MODEL_PATH = "/models/barcelona_pavilion_3d_demo/scene.gltf";
+const MODEL_PATH = "/models/arch-hero-generator_v003.glb";
 
-function PavilionModel() {
+function ArchHeroModel() {
   const { scene } = useGLTF(MODEL_PATH);
   const sceneClone = useMemo<Object3D>(() => scene.clone(), [scene]);
   const modelRootRef = useRef<Group>(null);
@@ -57,7 +57,7 @@ export function BarcelonaPavilionPreview() {
         <directionalLight position={[-6, 4, -5]} intensity={0.35} />
 
         <Suspense fallback={<LoadingFallback />}>
-          <PavilionModel />
+          <ArchHeroModel />
         </Suspense>
 
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
@@ -80,7 +80,7 @@ export function BarcelonaPavilionPreview() {
       </div>
 
       <div className="pointer-events-none absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/25 to-transparent px-5 py-4 text-xs tracking-wide text-white/80">
-        Cargando desde /models/barcelona_pavilion_3d_demo/scene.gltf
+        Cargando desde /models/arch-hero-generator_v003.glb
       </div>
     </div>
   );

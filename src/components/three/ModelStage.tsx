@@ -5,7 +5,7 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Box3, Group, MathUtils, Object3D, PerspectiveCamera, Vector3 } from "three";
 
-const DEFAULT_MODEL_PATH = "/models/barcelona_pavilion_3d_demo/scene.gltf";
+const DEFAULT_MODEL_PATH = "/models/arch-hero-generator_v003.glb";
 const DEBUG_3D = true;
 
 export type StageConfig = {
@@ -268,7 +268,7 @@ function StageScene({
   );
 }
 
-export function ModelStage({ modelName = "Barcelona Pavilion", modelPath = DEFAULT_MODEL_PATH, initialConfig = INITIAL_STAGE_CONFIG }: ModelStageProps) {
+export function ModelStage({ modelName = "Arch Hero Generator", modelPath = DEFAULT_MODEL_PATH, initialConfig = INITIAL_STAGE_CONFIG }: ModelStageProps) {
   const [config, setConfig] = useState<StageConfig>(initialConfig);
   const [bounds, setBounds] = useState<BoundsSnapshot>({ center: [0, 0, 0], size: [0, 0, 0] });
   const [cameraSnapshot, setCameraSnapshot] = useState<CameraSnapshot>({

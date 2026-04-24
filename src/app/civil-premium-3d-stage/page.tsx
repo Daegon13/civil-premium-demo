@@ -11,7 +11,7 @@ export default function CivilPremium3DStagePage() {
         </p>
       </header>
 
-      <ModelStage modelName="Barcelona Pavilion 3D Demo" modelPath="/models/barcelona_pavilion_3d_demo/scene.gltf" />
+      <ModelStage modelName="Arch Hero Generator v003" modelPath="/models/arch-hero-generator_v003.glb" />
     </main>
   );
 }
