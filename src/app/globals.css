@@ -134,19 +134,26 @@ body {
 /* Reglas de uso para reforzar identidad de ingeniería estructural */
 .theme-hero {
   position: relative;
+  isolation: isolate;
 }
 
 .theme-hero::after {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 0;
   pointer-events: none;
   background-image:
     linear-gradient(to right, color-mix(in srgb, var(--color-border) 35%, transparent) 1px, transparent 1px),
     linear-gradient(to bottom, color-mix(in srgb, var(--color-border) 28%, transparent) 1px, transparent 1px);
   background-size: 80px 80px;
-  opacity: 0.18;
+  opacity: 0.14;
   mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.58), transparent 70%);
+}
+
+.theme-hero > * {
+  position: relative;
+  z-index: 10;
 }
 
 .theme-section {
