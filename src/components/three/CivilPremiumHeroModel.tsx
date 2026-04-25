@@ -7,7 +7,7 @@ import { Box3, Group, MathUtils, Object3D, PerspectiveCamera, Sphere, Vector3 } 
 import { getAutoCameraFit } from "./lib/cameraFit";
 
 const MODEL_PATH = "/models/arch-hero-generator_v003.glb";
-const DEBUG_CONTROLS = true;
+const DEBUG_CONTROLS = process.env.NEXT_PUBLIC_HERO_DEBUG_CONTROLS === "true";
 const CAMERA_RIG_DEBUG = false;
 // Diagnóstico temporal: cámara fija para verificar clipping/cortes.
 // Si con este modo desaparece el corte, la causa está en offsets/animación del rig.
@@ -158,6 +158,15 @@ type BoundsSnapshot = {
   size: [number, number, number];
 };
 
+function getBaseTargetFromBounds(bounds: BoundsSnapshot, breakpoint: Breakpoint): [number, number, number] {
+  const targetOffset = ART_DIRECTION[breakpoint].targetOffset;
+  return [
+    bounds.center[0] + targetOffset[0],
+    bounds.center[1] + targetOffset[1],
+    bounds.center[2] + targetOffset[2],
+  ];
+}
+
 function HeroSceneModel({
   breakpoint,
   onBoundsChange,
@@ -254,7 +263,6 @@ function CameraRig({
       fitPadding: artDirection.modelFit.fitPadding,
     });
     const cameraOffset = new Vector3(...artDirection.cameraOffset);
-    const targetOffset = new Vector3(...artDirection.targetOffset);
     const { microDrift, parallax, smoothing, clamps } = artDirection.cameraRig;
 
     if (fixedMode) {
@@ -262,9 +270,8 @@ function CameraRig({
       baseTarget.current.set(...FIXED_CAMERA_DEBUG.target);
     } else {
       baseCameraPosition.current.copy(fit.autoCameraPosition).add(cameraOffset);
-      baseTarget.current
-        .set(bounds.center[0], bounds.center[1], bounds.center[2])
-        .add(targetOffset);
+      const [baseTargetX, baseTargetY, baseTargetZ] = getBaseTargetFromBounds(bounds, breakpoint);
+      baseTarget.current.set(baseTargetX, baseTargetY, baseTargetZ);
     }
 
     smoothPointer.current.x = MathUtils.damp(smoothPointer.current.x, pointer.x, smoothing.pointer, delta);
@@ -473,14 +480,10 @@ export function CivilPremiumHeroModel() {
   }, []);
 
   const baseCamera = FORCE_FIXED_CAMERA_FOR_DEBUG ? FIXED_CAMERA_DEBUG.position : ([7.6, 3.9, 5.9] as const);
-  const baseTarget = useMemo<[number, number, number]>(() => {
-    const targetOffset = ART_DIRECTION[breakpoint].targetOffset;
-    return [
-      bounds.center[0] + targetOffset[0],
-      bounds.center[1] + targetOffset[1],
-      bounds.center[2] + targetOffset[2],
-    ];
-  }, [bounds.center, breakpoint]);
+  const baseTarget = useMemo<[number, number, number]>(
+    () => getBaseTargetFromBounds(bounds, breakpoint),
+    [bounds, breakpoint],
+  );
 
   return (
     <div
