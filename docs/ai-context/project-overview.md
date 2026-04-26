@@ -15,6 +15,19 @@ Este repositorio contiene una aplicación web para servicios de ingeniería civi
 - `src/content/`: contenido de marca, copy y metadatos
 - `src/hooks/`: lógica reutilizable de interacción (ej. efectos visuales)
 
+## Cómo ejecutar localmente
+1. Instalar dependencias del proyecto.
+2. Levantar entorno de desarrollo con el script del proyecto.
+3. Abrir la URL local reportada por Next.js en el navegador.
+
+> Nota: usar siempre scripts definidos en `package.json` para evitar desvíos entre entornos.
+
+## Dónde vive cada feature (guía rápida)
+- Página principal y secciones de marketing: `src/app/` y componentes asociados.
+- Contenido de negocio y textos: `src/content/`.
+- SEO/metadatos globales: `src/app/layout.tsx`.
+- Efectos/interacciones reutilizables: `src/hooks/`.
+
 ## Convenciones recomendadas para trabajo con IA
 1. Confirmar versión/framework antes de proponer cambios profundos.
 2. Evitar soluciones con SSR/CSR ambiguo en componentes críticos de hidratación.
