@@ -8,7 +8,7 @@ import { siteContent } from "@/content/siteContent";
 export function Hero() {
   return (
     <section className="theme-hero relative isolate section-hero section-spacing section-density-high pb-10 sm:pb-12" id="inicio">
-      <div className="site-container relative z-10 grid items-center gap-8 md:gap-10 lg:items-start lg:grid-cols-[1fr_1.02fr] lg:gap-14 xl:grid-cols-[0.98fr_1.02fr] xl:gap-16">
+      <div className="site-container relative z-10 grid items-center gap-8 md:gap-10 lg:items-start lg:grid-cols-[1.06fr_0.94fr] lg:gap-12 xl:grid-cols-[1.04fr_0.96fr] xl:gap-14">
         <div className="space-y-5 sm:space-y-6">
           <div className="block-reading reading-block-dense rounded-[var(--radius-md)]">
             <div className="space-y-2">
