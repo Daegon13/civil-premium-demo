@@ -15,6 +15,21 @@ npm run start
 npm run lint
 ```
 
+## Ajustes manuales del Hero 3D
+
+Puedes tunear cámara y caja del modelo desde `.env.local`:
+
+```bash
+NEXT_PUBLIC_HERO_CAMERA_DISTANCE_FACTOR=1
+NEXT_PUBLIC_HERO_STAGE_ASPECT_RATIO="15 / 10"
+NEXT_PUBLIC_HERO_STAGE_MIN_HEIGHT_REM=19
+NEXT_PUBLIC_HERO_STAGE_MAX_HEIGHT_REM=26
+```
+
+- `NEXT_PUBLIC_HERO_CAMERA_DISTANCE_FACTOR`: controla alejamiento de cámara (`>1` aleja, `<1` acerca).
+- `NEXT_PUBLIC_HERO_STAGE_ASPECT_RATIO`: relación ancho/alto del bloque 3D.
+- `NEXT_PUBLIC_HERO_STAGE_MIN_HEIGHT_REM` y `NEXT_PUBLIC_HERO_STAGE_MAX_HEIGHT_REM`: límites de altura del contenedor.
+
 ## Deploy en Vercel
 1. Importar el repositorio en Vercel.
 2. Definir la variable `NEXT_PUBLIC_SITE_URL` con el dominio final (por ejemplo, `https://tudominio.com`).

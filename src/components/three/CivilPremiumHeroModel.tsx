@@ -8,7 +8,33 @@ import { getAutoCameraFit } from "./lib/cameraFit";
 
 const MODEL_PATH = "/models/arch-hero-generator_v003.glb";
 const DEBUG_CONTROLS = process.env.NEXT_PUBLIC_HERO_DEBUG_CONTROLS === "true";
+const USE_CAMERA_RIG = process.env.NEXT_PUBLIC_HERO_USE_CAMERA_RIG === "true";
 const CAMERA_RIG_DEBUG = false;
+
+function readNumberEnv(name: string, fallback: number) {
+  const raw = process.env[name];
+  if (!raw) {
+    return fallback;
+  }
+
+  const parsed = Number(raw);
+  if (Number.isNaN(parsed) || !Number.isFinite(parsed)) {
+    return fallback;
+  }
+
+  return parsed;
+}
+
+/**
+ * Controles manuales rápidos para ajustar el hero sin tocar lógica de cámara.
+ * - NEXT_PUBLIC_HERO_CAMERA_DISTANCE_FACTOR: > 1 aleja cámara, < 1 acerca.
+ * - NEXT_PUBLIC_HERO_STAGE_MIN_HEIGHT_REM / MAX_HEIGHT_REM: alto caja hero.
+ * - NEXT_PUBLIC_HERO_STAGE_ASPECT_RATIO: relación ancho/alto (ej: "15 / 10", "16 / 9").
+ */
+const HERO_CAMERA_DISTANCE_FACTOR = readNumberEnv("NEXT_PUBLIC_HERO_CAMERA_DISTANCE_FACTOR", 1);
+const HERO_STAGE_MIN_HEIGHT_REM = readNumberEnv("NEXT_PUBLIC_HERO_STAGE_MIN_HEIGHT_REM", 19);
+const HERO_STAGE_MAX_HEIGHT_REM = readNumberEnv("NEXT_PUBLIC_HERO_STAGE_MAX_HEIGHT_REM", 26);
+const HERO_STAGE_ASPECT_RATIO = process.env.NEXT_PUBLIC_HERO_STAGE_ASPECT_RATIO ?? "15 / 10";
 // Diagnóstico temporal: cámara fija para verificar clipping/cortes.
 // Si con este modo desaparece el corte, la causa está en offsets/animación del rig.
 const FORCE_FIXED_CAMERA_FOR_DEBUG = false;
@@ -479,15 +505,31 @@ export function CivilPremiumHeroModel() {
     };
   }, []);
 
-  const baseCamera = FORCE_FIXED_CAMERA_FOR_DEBUG ? FIXED_CAMERA_DEBUG.position : ([7.6, 3.9, 5.9] as const);
   const baseTarget = useMemo<[number, number, number]>(
     () => getBaseTargetFromBounds(bounds, breakpoint),
     [bounds, breakpoint],
   );
+  const tunedBaseCamera = useMemo<[number, number, number]>(() => {
+    if (FORCE_FIXED_CAMERA_FOR_DEBUG) {
+      return [...FIXED_CAMERA_DEBUG.position];
+    }
+
+    const baseCamera: [number, number, number] = [7.6, 3.9, 5.9];
+    const target = new Vector3(...baseTarget);
+    const camera = new Vector3(...baseCamera);
+    const direction = camera.sub(target).multiplyScalar(HERO_CAMERA_DISTANCE_FACTOR);
+    const tunedCamera = target.add(direction);
+    return [tunedCamera.x, tunedCamera.y, tunedCamera.z];
+  }, [baseTarget]);
 
   return (
     <div
-      className="group relative aspect-[16/10] w-full min-h-[20rem] max-h-[29rem] overflow-hidden rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--color-border)_75%,var(--color-accent)_25%)] bg-[radial-gradient(circle_at_72%_38%,rgba(72,84,99,0.22)_0%,rgba(20,24,30,0)_34%),linear-gradient(135deg,#0f141b_0%,#161d26_50%,#0d1117_100%)] shadow-[0_34px_90px_rgba(2,8,18,0.46)]"
+      className="group relative w-full overflow-hidden rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--color-border)_75%,var(--color-accent)_25%)] bg-[radial-gradient(circle_at_72%_38%,rgba(72,84,99,0.22)_0%,rgba(20,24,30,0)_34%),linear-gradient(135deg,#0f141b_0%,#161d26_50%,#0d1117_100%)] shadow-[0_34px_90px_rgba(2,8,18,0.46)]"
+      style={{
+        aspectRatio: HERO_STAGE_ASPECT_RATIO,
+        minHeight: `${HERO_STAGE_MIN_HEIGHT_REM}rem`,
+        maxHeight: `${HERO_STAGE_MAX_HEIGHT_REM}rem`,
+      }}
       onPointerMove={(event) => {
         const rect = event.currentTarget.getBoundingClientRect();
         const nx = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
@@ -502,7 +544,7 @@ export function CivilPremiumHeroModel() {
       <Canvas
         className="relative z-10"
         camera={{
-          position: baseCamera,
+          position: tunedBaseCamera,
           fov: FORCE_FIXED_CAMERA_FOR_DEBUG ? FIXED_CAMERA_DEBUG.fov : 30,
           near: FORCE_FIXED_CAMERA_FOR_DEBUG ? FIXED_CAMERA_DEBUG.near : 0.12,
           far: FORCE_FIXED_CAMERA_FOR_DEBUG ? FIXED_CAMERA_DEBUG.far : 140,
@@ -524,16 +566,19 @@ export function CivilPremiumHeroModel() {
           <meshStandardMaterial color="#1c2128" transparent opacity={0.18} roughness={1} metalness={0} />
         </mesh>
 
-        {DEBUG_CONTROLS ? (
+        {DEBUG_CONTROLS || !USE_CAMERA_RIG ? (
           <OrbitControls
             makeDefault
             enablePan={false}
+            enableZoom={false}
             enableDamping
             dampingFactor={0.08}
             autoRotate={!isUserInteracting}
-            autoRotateSpeed={0.55}
+            autoRotateSpeed={0.48}
             minDistance={5.5}
             maxDistance={16}
+            minPolarAngle={Math.PI / 4.8}
+            maxPolarAngle={Math.PI / 2.08}
             target={baseTarget}
             onStart={pauseAutoRotateForUserInteraction}
             onChange={pauseAutoRotateForUserInteraction}
