@@ -9,7 +9,7 @@ import { HERO_3D_TUNING } from "./lib/heroTuning";
 
 const MODEL_PATH = "/models/arch-hero-generator_v003.glb";
 const DEBUG_CONTROLS = process.env.NEXT_PUBLIC_HERO_DEBUG_CONTROLS === "true";
-const USE_CAMERA_RIG = HERO_3D_TUNING.useCameraRig;
+const USE_CAMERA_RIG = HERO_3D_TUNING.useCameraRig || process.env.NEXT_PUBLIC_HERO_USE_CAMERA_RIG === "true";
 const CAMERA_RIG_DEBUG = false;
 // Diagnóstico temporal: cámara fija para verificar clipping/cortes.
 // Si con este modo desaparece el corte, la causa está en offsets/animación del rig.
@@ -500,7 +500,7 @@ export function CivilPremiumHeroModel() {
 
   return (
     <div
-      className="group relative w-full overflow-hidden rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--color-border)_75%,var(--color-accent)_25%)] bg-[radial-gradient(circle_at_72%_38%,rgba(72,84,99,0.22)_0%,rgba(20,24,30,0)_34%),linear-gradient(135deg,#0f141b_0%,#161d26_50%,#0d1117_100%)] shadow-[0_34px_90px_rgba(2,8,18,0.46)]"
+      className="group relative aspect-[15/10] w-full min-h-[19rem] max-h-[26rem] overflow-hidden rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--color-border)_75%,var(--color-accent)_25%)] bg-[radial-gradient(circle_at_72%_38%,rgba(72,84,99,0.22)_0%,rgba(20,24,30,0)_34%),linear-gradient(135deg,#0f141b_0%,#161d26_50%,#0d1117_100%)] shadow-[0_34px_90px_rgba(2,8,18,0.46)]"
       style={{
         aspectRatio: HERO_3D_TUNING.stageAspectRatio,
         minHeight: `${HERO_3D_TUNING.stageMinHeightRem}rem`,
